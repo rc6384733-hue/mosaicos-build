@@ -50,6 +50,9 @@ jobs:
       - name: Verificar ISO
         if: always()
         run: |
+          # live-build se ejecuta como root dentro del contenedor y crea
+          # desktop/dist y desktop/build con propietario root.
+          sudo chown -R "$(id -u):$(id -g)" desktop/dist desktop/build 2>/dev/null || true
           ls -lh desktop/dist || true
           if [ -f desktop/dist/MosaicOS-0.50-i386.iso ]; then
             sh desktop/verify-iso.sh desktop/dist/MosaicOS-0.50-i386.iso || true
