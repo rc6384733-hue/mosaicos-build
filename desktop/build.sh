@@ -11,7 +11,7 @@ ARCH=${1:-i386}
 CODENAME=bookworm
 PROFILE=mosaic-desktop-i386.packages
 VOLUME=MOSAICOS_050_I386
-VERSION=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null || echo 0.50)
+MOSAIC_VERSION=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null || echo 0.50)
 DIST="$SCRIPT_DIR/dist"
 WORK_DIR="$SCRIPT_DIR/build/i386"
 LOG="$WORK_DIR/build.log"
@@ -62,7 +62,7 @@ cd "$WORK_DIR"
 lb clean --purge >/dev/null 2>&1 || true
 
 {
-  echo "MosaicOS $VERSION — build $(date -Is 2>/dev/null || date)"
+  echo "MosaicOS $MOSAIC_VERSION — build $(date -Is 2>/dev/null || date)"
   echo "Host: $(uname -srm) / $(dpkg --print-architecture)"
   echo "Objetivo: $ARCH / Debian $CODENAME"
 } | tee "$LOG"
@@ -76,7 +76,7 @@ lb config \
   --architectures i386 \
   --binary-images iso-hybrid \
   --archive-areas "main contrib non-free non-free-firmware" \
-  --iso-application "MosaicOS $VERSION Aero i386" \
+  --iso-application "MosaicOS $MOSAIC_VERSION Aero i386" \
   --iso-volume "$VOLUME" \
   --iso-publisher "MosaicOS Project" \
   --bootappend-live "boot=live components hostname=mosaicos username=mosaic locales=es_ES.UTF-8 keyboard-layouts=es timezone=Europe/Madrid console=tty0 console=ttyS0,115200 quiet splash" \
@@ -94,9 +94,9 @@ lb build 2>&1 | tee -a "$LOG"
 
 ISO=$(find "$WORK_DIR" -maxdepth 1 -type f -name '*.iso' -print -quit)
 [ -n "$ISO" ] && [ -s "$ISO" ] || fail "No se encontró una ISO válida tras live-build. Revisa $LOG."
-DEST="$DIST/MosaicOS-$VERSION-i386.iso"
+DEST="$DIST/MosaicOS-$MOSAIC_VERSION-i386.iso"
 cp "$ISO" "$DEST"
-( cd "$DIST" && sha256sum "MosaicOS-$VERSION-i386.iso" > "MosaicOS-$VERSION-i386.iso.sha256" )
+( cd "$DIST" && sha256sum "MosaicOS-$MOSAIC_VERSION-i386.iso" > "MosaicOS-$MOSAIC_VERSION-i386.iso.sha256" )
 
 printf '\nISO creada: %s\n' "$DEST"
 printf 'Tamaño: %s\n' "$(du -h "$DEST" | awk '{print $1}')"
