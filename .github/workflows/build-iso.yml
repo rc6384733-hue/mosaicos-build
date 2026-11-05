@@ -65,7 +65,6 @@ jobs:
 
       - name: Prueba de arranque real en QEMU
         if: always()
-        continue-on-error: true
         run: |
           set -eu
           ISO=desktop/dist/MosaicOS-0.50-i386.iso
@@ -89,7 +88,10 @@ jobs:
               break
             fi
           done
-          sleep 10
+          # El sistema live arranca el escritorio con autologin (lightdm).
+          # Se le da tiempo a X/LXQt para que la captura muestre el escritorio
+          # y no la consola de texto.
+          sleep 120
           if [ -S /tmp/qemu-mon ]; then
             printf 'screendump /tmp/screen.ppm\n' | socat - UNIX-CONNECT:/tmp/qemu-mon || true
           fi
