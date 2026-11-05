@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       xorriso \
       mtools \
       dosfstools \
+      cpio \
       isolinux \
       syslinux-common \
       syslinux-utils \
