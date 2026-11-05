@@ -42,7 +42,7 @@ jobs:
         env:
           MOSAIC_MIN_FREE_GIB: '15'
         run: |
-          docker run --rm \
+          docker run --rm --privileged \
             -e MOSAIC_MIN_FREE_GIB \
             -v "$PWD:/work" \
             mosaicos-builder i386
@@ -53,6 +53,11 @@ jobs:
           ls -lh desktop/dist || true
           if [ -f desktop/dist/MosaicOS-0.50-i386.iso ]; then
             sh desktop/verify-iso.sh desktop/dist/MosaicOS-0.50-i386.iso || true
+          else
+            echo '== Diagnóstico: debootstrap.log =='
+            find desktop/build -name debootstrap.log -exec sh -c 'echo "--- $1"; tail -100 "$1"' _ {} \; 2>/dev/null || true
+            echo '== Diagnóstico: build.log =='
+            tail -150 desktop/build/i386/build.log 2>/dev/null || true
           fi
 
       - name: Prueba de arranque real en QEMU
