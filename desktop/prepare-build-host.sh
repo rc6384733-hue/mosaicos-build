@@ -40,7 +40,7 @@ apt-get update
 
 # Herramientas comunes de live-build y análisis de la ISO.
 BASE_PKGS="live-build debootstrap squashfs-tools xorriso mtools dosfstools \
-  isolinux syslinux-common syslinux-utils file \
+  cpio isolinux syslinux-common syslinux-utils file \
   ca-certificates curl git python3 shellcheck"
 
 # Emulación i386 cuando el host es amd64.
