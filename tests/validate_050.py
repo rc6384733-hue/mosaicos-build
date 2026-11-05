@@ -39,7 +39,7 @@ for needle, message in [
     ("--bootloaders syslinux", "Falta el cargador BIOS syslinux/isolinux"),
     ("--debian-installer live", "Falta el instalador Debian live"),
     ("MOSAICOS_050_I386", "El volumen de la ISO no es 0.50"),
-    ("MosaicOS-$VERSION-i386.iso", "El nombre de salida no está versionado"),
+    ("MosaicOS-$MOSAIC_VERSION-i386.iso", "El nombre de salida no está versionado"),
     ("MOSAIC_MIN_FREE_GIB", "Falta el control de espacio libre"),
     ("sha256sum", "Falta la suma SHA-256 de la ISO"),
 ]:
