@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+printf '\n  MOSAICOS 0.50 AERO — EDICIÓN i386 (32 BITS)\n'
+printf '  Escritorio real basado en Debian GNU/Linux 12 (bookworm).\n'
+printf '  No es una página web: LXQt + Openbox gestionan ventanas y sesión.\n\n'
+printf '  Sistema: '; . /etc/os-release; printf '%s %s\n' "$NAME" "${VERSION_ID:-}"
+printf '  Arquitectura: '; dpkg --print-architecture
+printf '  Kernel: '; uname -r
+printf '  Memoria: '; awk '/MemTotal/ {printf "%.0f MiB\n", $2/1024}' /proc/meminfo
+printf '  Disco raíz: '; df -h / | awk 'NR==2 {print $4 " libres de " $2}'
+printf '\n  Aplicaciones Linux incluidas:\n'
+for cmd in firefox-esr thunderbird libreoffice vlc gimp qterminal; do
+  if command -v "$cmd" >/dev/null 2>&1; then printf '  [OK] %s\n' "$cmd"; else printf '  [--] %s no instalado\n' "$cmd"; fi
+done
+printf '\n  Compatibilidad con Windows:\n'
+if command -v wine >/dev/null 2>&1; then
+  printf '  [OK] Wine32 %s (solo programas Windows de 32 bits)\n' "$(wine --version 2>/dev/null | head -n1)"
+else
+  printf '  [--] Wine32 no instalado\n'
+fi
+if [ -d "$HOME/.wine" ]; then printf '  [OK] Prefijo Wine en %s\n' "$HOME/.wine"; else printf '  [..] El prefijo Wine se creará en el primer inicio\n'; fi
+printf '\n  Instalar en disco: icono «Instalar MosaicOS» o menú de arranque > Instalar.\n'
+printf '  Persistencia USB: añade «persistence» al arranque y prepara la partición.\n'
+printf '  Diagnóstico: ejecuta mosaic-report para guardar un informe.\n'
+printf '\n  La compatibilidad con programas Windows no es universal.\n'
+printf '  Las aplicaciones Windows de 64 bits NO se ejecutan en esta edición i386.\n\n'

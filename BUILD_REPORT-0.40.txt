@@ -1,0 +1,5 @@
+MosaicOS 0.43 — informe de validación del paquete
+
+Este informe se completa con los resultados reales de los comandos ejecutados durante la preparación del archivo.
+La creación de una ISO requiere un host Debian compatible y acceso a repositorios externos.
+No se afirmará que existe una ISO ni que se ha probado el arranque hasta ejecutar esas pruebas.

@@ -1,0 +1,11 @@
+#!/bin/sh
+# Sonido de inicio sintetizado; silencioso si no hay servidor de audio.
+set -eu
+sound=/usr/share/sounds/mosaic/startup.wav
+[ -r "$sound" ] || exit 0
+if command -v paplay >/dev/null 2>&1; then
+  paplay "$sound" >/dev/null 2>&1 &
+elif command -v aplay >/dev/null 2>&1; then
+  aplay -q "$sound" >/dev/null 2>&1 &
+fi
+exit 0

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Información del equipo Mosaic
+Comment=Consultar hardware y recursos
+Exec=qterminal -e mosaic-hardware
+Icon=computer
+Categories=System;
+Terminal=false

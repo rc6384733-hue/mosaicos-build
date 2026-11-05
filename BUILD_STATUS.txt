@@ -1,0 +1,24 @@
+MosaicOS 0.50 Aero (i386) — estado de construcción
+===================================================
+
+[OK] Receta live-build exclusiva para i386 / Debian 12 Bookworm
+[OK] Perfil de 227 paquetes verificados en packages.debian.org/bookworm/i386
+[OK] Escritorio LXQt + Openbox y panel estilo Windows 7
+[OK] Tema Openbox MosaicAero, iconos, fondos y sonido de inicio
+[OK] Compatibilidad Wine32 y asociación de archivos .exe
+[OK] Configuración en español y usuario live "mosaic"
+[OK] Hook de chroot (locale, permisos, servicios, cachés)
+[OK] Instalador Debian live y accesos directos
+[OK] Validador estático tests/validate_050.py
+[OK] Rutas de compilación Debian, Docker y GitHub Actions
+
+[PENDIENTE] Compilar la ISO real con live-build
+[PENDIENTE] Arrancar en QEMU (BIOS) y corregir incidencias
+[PENDIENTE] Probar en hardware real de 32 bits
+[PENDIENTE] Probar la instalación en disco
+[PENDIENTE] Probar aplicaciones Windows de 32 bits concretas
+[PENDIENTE] Medir RAM, CPU y tiempo de arranque
+[PENDIENTE] Probar persistencia USB
+
+Nota: este ZIP no contiene una ISO compilada. El entorno original era
+Windows sin Linux/WSL, Docker ni Python; la receta no se pudo ejecutar allí.

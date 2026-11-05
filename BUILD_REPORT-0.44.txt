@@ -1,0 +1,10 @@
+MosaicOS 0.44 — informe
+Tipo: paquete fuente consolidado; no es ISO ni instalador.
+Base heredada: árbol MosaicOS Daily 0.43.
+Añadido: auditoría, perfiles, política de proyectos, inventario de hardware y estado/progreso.
+Objetivos: 1 GB para escritorio básico; x86 32-bit Legacy y x86-64 principal; prioridad equilibrada.
+
+Validaciones realizadas: shell -n del inventario; py_compile del inspector Python; integridad ZIP.
+No ejecutado: live-build, generación ISO, QEMU, pruebas físicas ni mediciones de RAM.
+
+El soporte de 32 bits y la disponibilidad de navegadores/runtimes modernos deben verificarse por distribución y versión. 1 GB es objetivo de escritorio básico, no garantía para cargas web modernas, juegos o IA generativa.

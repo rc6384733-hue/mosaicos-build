@@ -1,0 +1,18 @@
+[Default Applications]
+application/x-ms-dos-executable=mosaic-run-exe.desktop
+application/x-msdownload=mosaic-run-exe.desktop
+application/x-msi=mosaic-run-exe.desktop
+application/x-ms-shortcut=mosaic-run-exe.desktop
+text/plain=featherpad.desktop
+image/png=lximage-qt.desktop
+image/jpeg=lximage-qt.desktop
+application/pdf=qpdfview.desktop
+audio/mpeg=vlc.desktop
+video/mp4=vlc.desktop
+text/html=firefox-esr.desktop
+
+[Added Associations]
+application/x-ms-dos-executable=mosaic-run-exe.desktop;
+application/x-msdownload=mosaic-run-exe.desktop;
+application/x-msi=mosaic-run-exe.desktop;
+application/x-ms-shortcut=mosaic-run-exe.desktop;

@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+if [ "$(id -u)" -eq 0 ]; then
+  echo 'No ejecutes este asistente como root directamente; usa tu usuario normal.' >&2
+  exit 1
+fi
+if ! command -v sudo >/dev/null 2>&1; then
+  echo 'No se encontró sudo.' >&2
+  exit 1
+fi
+if ! command -v apt-get >/dev/null 2>&1; then
+  echo 'Este actualizador requiere una base Debian con apt.' >&2
+  exit 1
+fi
+printf '\nMosaicOS actualizará las listas y ofrecerá actualizar paquetes instalados.\n'
+printf 'La descarga requiere conexión a Internet y puede consumir datos.\n\n'
+if ! sudo -v; then echo 'No se pudo autenticar con sudo.' >&2; exit 1; fi
+sudo apt-get update
+printf '\n¿Deseas continuar con la actualización de paquetes? [s/N] '
+IFS= read -r answer
+case "$answer" in s|S|si|SI|Si|sí|Sí) sudo apt-get upgrade ;; *) echo 'Actualización cancelada.' ;; esac

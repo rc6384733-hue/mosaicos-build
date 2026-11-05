@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Asistente de bienvenida MosaicOS
+Comment=Muestra la guía de inicio la primera vez
+Exec=/usr/local/bin/mosaic-first-run
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Phase=Applications

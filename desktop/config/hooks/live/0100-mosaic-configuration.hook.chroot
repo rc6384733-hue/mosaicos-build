@@ -1,0 +1,79 @@
+#!/bin/sh
+# MosaicOS 0.50 Aero — ajustes dentro del chroot de live-build.
+set -eu
+
+export DEBIAN_FRONTEND=noninteractive
+export LC_ALL=C.UTF-8
+
+echo "[mosaic-hook] Configurando locale, teclado y zona horaria"
+if [ -f /etc/locale.gen ]; then
+  sed -i 's/^# *es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen
+  grep -q '^es_ES.UTF-8 UTF-8' /etc/locale.gen || echo 'es_ES.UTF-8 UTF-8' >> /etc/locale.gen
+  locale-gen || true
+fi
+ln -snf /usr/share/zoneinfo/Europe/Madrid /etc/localtime || true
+echo 'Europe/Madrid' > /etc/timezone
+if [ -f /etc/default/keyboard ]; then
+  sed -i 's/^XKBLAYOUT=.*/XKBLAYOUT="es"/' /etc/default/keyboard || true
+fi
+
+echo "[mosaic-hook] Creando usuario live 'mosaic'"
+if ! id mosaic >/dev/null 2>&1; then
+  useradd -m -s /bin/bash -c 'Usuario MosaicOS' mosaic
+  passwd -d mosaic >/dev/null 2>&1 || true
+fi
+for group in sudo audio video netdev plugdev bluetooth lp scanner dialout cdrom; do
+  if getent group "$group" >/dev/null 2>&1; then
+    usermod -aG "$group" mosaic >/dev/null 2>&1 || true
+  fi
+done
+chown -R mosaic:mosaic /home/mosaic 2>/dev/null || true
+
+echo "[mosaic-hook] Permisos de herramientas y accesos directos"
+chmod 0755 /usr/local/bin/mosaic-* 2>/dev/null || true
+chmod 0644 /usr/share/applications/*.desktop 2>/dev/null || true
+chmod 0644 /etc/xdg/autostart/*.desktop 2>/dev/null || true
+if [ -d /etc/skel/Escritorio ]; then
+  chmod 0755 /etc/skel/Escritorio
+  chmod 0755 /etc/skel/Escritorio/*.desktop 2>/dev/null || true
+fi
+chmod 0440 /etc/sudoers.d/010-mosaic 2>/dev/null || true
+chmod 0755 /usr/share/backgrounds/mosaicos 2>/dev/null || true
+chmod 0644 /usr/share/backgrounds/mosaicos/* 2>/dev/null || true
+
+echo "[mosaic-hook] Limpieza de artefactos de desarrollo"
+find /usr/local/bin -maxdepth 1 -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+find /usr/share/mosaicos -name '*.pyc' -delete 2>/dev/null || true
+
+echo "[mosaic-hook] Memoria y energía"
+mkdir -p /etc/default
+cat > /etc/default/zramswap <<'EOF'
+# MosaicOS: compresión de memoria para equipos con poca RAM
+ALGO=zstd
+PERCENT=25
+PRIORITY=100
+EOF
+if [ -f /etc/default/earlyoom ]; then
+  sed -i 's|^EARLYOOM_ARGS=.*|EARLYOOM_ARGS="-r 60 -m 5 -s 5 --avoid \&(mysqld\|mariadbd\|firefox\|libreoffice) --prefer \&(bash\|sh\|zsh\|qterminal\|featherpad)"|' /etc/default/earlyoom || true
+fi
+
+echo "[mosaic-hook] Servicios"
+for service in lightdm NetworkManager bluetooth cups; do
+  systemctl enable "$service" >/dev/null 2>&1 || true
+done
+
+echo "[mosaic-hook] Cachés de escritorio"
+if command -v fc-cache >/dev/null 2>&1; then fc-cache -f >/dev/null 2>&1 || true; fi
+if command -v update-desktop-database >/dev/null 2>&1; then
+  update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
+fi
+if command -v update-mime-database >/dev/null 2>&1; then
+  update-mime-database /usr/share/mime >/dev/null 2>&1 || true
+fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+  for theme in /usr/share/icons/MosaicAero /usr/share/icons/hicolor; do
+    [ -d "$theme" ] && gtk-update-icon-cache -f -t "$theme" >/dev/null 2>&1 || true
+  done
+fi
+
+echo "[mosaic-hook] Configuración completada"

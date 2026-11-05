@@ -1,0 +1,47 @@
+#!/bin/sh
+set -eu
+OUT=${1:-}
+if [ -z "$OUT" ]; then
+  BASE=${XDG_DESKTOP_DIR:-"$(xdg-user-dir DESKTOP 2>/dev/null || echo "$HOME/Escritorio")"}
+  if [ -d "$BASE" ] && [ -w "$BASE" ]; then OUT="$BASE/mosaicos-informe.txt"; else OUT="$HOME/mosaicos-informe.txt"; fi
+fi
+mkdir -p "$(dirname "$OUT")"
+TMP=$(mktemp)
+trap 'rm -f "$TMP"' EXIT HUP INT TERM
+{
+  echo 'INFORME DEL SISTEMA — MOSAICOS 0.50 AERO (i386)'
+  echo '===================================='
+  echo "Fecha: $(date -Is 2>/dev/null || date)"
+  echo "Equipo: $(hostname)"
+  echo "Sistema: $(. /etc/os-release; printf '%s %s' "$PRETTY_NAME" "${VERSION_ID:-}")"
+  echo "Arquitectura: $(dpkg --print-architecture 2>/dev/null || uname -m)"
+  echo "Kernel: $(uname -srmo)"
+  echo
+  echo '[MEMORIA]'
+  free -h 2>/dev/null || cat /proc/meminfo
+  echo
+  echo '[ALMACENAMIENTO]'
+  df -hT
+  echo
+  echo '[CPU]'
+  if command -v lscpu >/dev/null 2>&1; then lscpu; else grep -m1 'model name' /proc/cpuinfo || true; fi
+  echo
+  echo '[RED]'
+  if command -v nmcli >/dev/null 2>&1; then nmcli general status 2>&1; nmcli device status 2>&1; else ip -brief link 2>&1 || true; fi
+  echo
+  echo '[PCI]'
+  if command -v lspci >/dev/null 2>&1; then lspci; else echo 'lspci no instalado'; fi
+  echo
+  echo '[USB]'
+  if command -v lsusb >/dev/null 2>&1; then lsusb; else echo 'lsusb no instalado'; fi
+  echo
+  echo '[APLICACIONES]'
+  for app in firefox-esr thunderbird libreoffice vlc wine winecfg qterminal; do
+    if command -v "$app" >/dev/null 2>&1; then printf '%s: disponible\n' "$app"; else printf '%s: no instalado\n' "$app"; fi
+  done
+  printf 'wine32 (dpkg): '; dpkg-query -W -f='${Status} ${Version}\n' wine32 2>/dev/null || echo 'no instalado'
+  printf 'Arquitectura: '; dpkg --print-architecture 2>/dev/null || uname -m
+} > "$TMP"
+chmod 600 "$TMP"
+mv "$TMP" "$OUT"
+printf 'Informe guardado en: %s\n' "$OUT"

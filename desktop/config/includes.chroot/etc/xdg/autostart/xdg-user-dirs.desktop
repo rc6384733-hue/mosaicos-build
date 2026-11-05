@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=XDG User Directories
+Comment=Crea las carpetas personales en español
+Exec=xdg-user-dirs-update
+Terminal=false
+NoDisplay=true
+OnlyShowIn=LXQt;
+X-GNOME-Autostart-enabled=true

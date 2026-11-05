@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Configuración Mosaic
+Comment=Configura pantalla, red, sonido y apariencia
+Exec=mosaic-settings
+Icon=preferences-desktop
+Terminal=false
+Categories=Settings;System;

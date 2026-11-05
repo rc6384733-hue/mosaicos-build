@@ -1,0 +1,1 @@
+{"ok": false, "mode": "static-demo", "note": "Este archivo permite que el shell se ejecute desde un servidor estatico sin errores. El puente nativo de MosaicOS responde de forma dinamica en /api/system."}

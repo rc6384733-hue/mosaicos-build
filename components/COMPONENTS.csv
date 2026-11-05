@@ -1,0 +1,9 @@
+component,role,proposed_use,status,integration_boundary,license_review
+ReactOS,NT-compatible base,primary kernel and Win32 base,selected,NT kernel and subsystem,required per imported component
+Wine,Windows API implementations,selectively reuse compatible user-mode components,candidate,Win32 DLL/API boundary,required
+Linux,drivers and utilities,reuse userland tools and port selected drivers where feasible,candidate,POSIX tools or explicit driver adapter,required
+FreeBSD,networking and system utilities,selectively reuse portable components,candidate,portable library or service boundary,required
+LLVM,compiler toolchain,build and developer tooling,candidate,toolchain interface,required
+Mesa,graphics stack,investigate compatible user-mode graphics components,candidate,graphics API and driver boundary,required
+7-Zip,archive support,integrate archive functionality if needed,candidate,application/library interface,required
+Mosaic Core,research kernel,independent experimental development,experimental,no production dependency until proven,own code plus dependency review

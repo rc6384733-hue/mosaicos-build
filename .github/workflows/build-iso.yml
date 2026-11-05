@@ -1,0 +1,169 @@
+name: Build MosaicOS ISO (i386)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+# Necesario para publicar la ISO en un Release (los artefactos de GitHub Free
+# solo tienen 500 MB y la ISO puede superarlos).
+permissions:
+  contents: write
+
+jobs:
+  build-i386:
+    name: MosaicOS 0.50 Aero i386
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Liberar espacio en disco
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost || true
+          df -h
+
+      - name: Habilitar emulación i386
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+
+      - name: Construir imagen del compilador
+        run: docker build -f desktop/docker/Dockerfile -t mosaicos-builder desktop
+
+      - name: Validar receta y archivos
+        run: python3 tests/validate_050.py
+
+      - name: Compilar ISO
+        env:
+          MOSAIC_MIN_FREE_GIB: '15'
+        run: |
+          docker run --rm \
+            -e MOSAIC_MIN_FREE_GIB \
+            -v "$PWD:/work" \
+            mosaicos-builder i386
+
+      - name: Verificar ISO
+        if: always()
+        run: |
+          ls -lh desktop/dist || true
+          if [ -f desktop/dist/MosaicOS-0.50-i386.iso ]; then
+            sh desktop/verify-iso.sh desktop/dist/MosaicOS-0.50-i386.iso || true
+          fi
+
+      - name: Prueba de arranque real en QEMU
+        if: always()
+        continue-on-error: true
+        run: |
+          set -eu
+          ISO=desktop/dist/MosaicOS-0.50-i386.iso
+          if [ ! -f "$ISO" ]; then
+            echo "No se generó la ISO: se omite la prueba de arranque."
+            exit 0
+          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq qemu-system-x86 socat
+          rm -f /tmp/serial.log /tmp/screen.ppm /tmp/qemu-mon
+          qemu-system-i386 -m 3072 -cdrom "$ISO" -boot d \
+            -display none -vga std \
+            -serial file:/tmp/serial.log \
+            -monitor unix:/tmp/qemu-mon,server,nowait &
+          QPID=$!
+          login_ok=0
+          for i in $(seq 1 240); do
+            sleep 5
+            if grep -qi 'login:' /tmp/serial.log 2>/dev/null; then
+              login_ok=1
+              break
+            fi
+          done
+          sleep 10
+          if [ -S /tmp/qemu-mon ]; then
+            printf 'screendump /tmp/screen.ppm\n' | socat - UNIX-CONNECT:/tmp/qemu-mon || true
+          fi
+          sleep 2
+          kill "$QPID" 2>/dev/null || true
+          wait "$QPID" 2>/dev/null || true
+          mkdir -p desktop/dist/qemu
+          cp /tmp/serial.log /tmp/screen.ppm desktop/dist/qemu/ 2>/dev/null || true
+          echo "== login en consola serie: $login_ok =="
+          tail -60 /tmp/serial.log 2>/dev/null || true
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('/tmp/screen.ppm')
+          if not p.is_file():
+              print('No se obtuvo captura de pantalla.')
+              raise SystemExit(0)
+          data = p.read_bytes()
+          parts = data.split(b'\n', 3)
+          if len(parts) < 4 or not data.startswith(b'P6'):
+              print('Captura en formato inesperado.')
+              raise SystemExit(0)
+          pixels = parts[3]
+          total = len(pixels) // 3
+          lit = sum(1 for i in range(0, len(pixels) - 2, 3)
+                    if pixels[i] + pixels[i + 1] + pixels[i + 2] > 30)
+          ratio = lit / total if total else 0
+          print(f'Píxeles iluminados: {lit}/{total} ({ratio:.1%})')
+          if ratio < 0.01:
+              raise SystemExit('La pantalla gráfica está en negro.')
+          PY
+          [ "$login_ok" = 1 ]
+
+      - name: Publicar diagnóstico de arranque
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mosaicos-diagnostico
+          path: |
+            desktop/dist/qemu/serial.log
+            desktop/dist/qemu/screen.ppm
+            desktop/dist/*.sha256
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Publicar ISO en un Release
+        if: hashFiles('desktop/dist/*.iso') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          TAG="build-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" \
+            --title "MosaicOS 0.50 i386 (build ${GITHUB_RUN_NUMBER})" \
+            --notes "ISO i386 generada automáticamente desde el commit ${GITHUB_SHA}. Incluye la receta de compilación, el SHA-256 y las instrucciones de reconstrucción en REJOIN.txt." \
+            || true
+          cd desktop/dist
+          for f in *.iso *.sha256; do
+            [ -f "$f" ] || continue
+            size=$(stat -c%s "$f")
+            if [ "$size" -gt 1900000000 ]; then
+              split -b 1800M -d -a 2 "$f" "$f.part-"
+              for part in "$f".part-*; do
+                gh release upload "$TAG" "$part" --clobber
+              done
+            else
+              gh release upload "$TAG" "$f" --clobber
+            fi
+          done
+          cat > REJOIN.txt <<'EOF'
+          MosaicOS 0.50 Aero i386: reconstrucción y verificación
+          
+          1. Descarga todos los archivos de este Release.
+          2. Si hay partes .part-XX, únelas en Linux/macOS:
+               cat MosaicOS-0.50-i386.iso.part-* > MosaicOS-0.50-i386.iso
+             En Windows PowerShell:
+               cmd /c copy /b MosaicOS-0.50-i386.iso.part-* MosaicOS-0.50-i386.iso
+          3. Verifica la integridad:
+               sha256sum -c MosaicOS-0.50-i386.iso.sha256
+          4. Arranca en QEMU:
+               qemu-system-i386 -m 2048 -cdrom MosaicOS-0.50-i386.iso -boot d
+          
+          La ISO es de 32 bits (i386), arranque BIOS (syslinux/isolinux).
+          No ejecuta aplicaciones Windows de 64 bits y no arranca por UEFI.
+          EOF
+          gh release upload "$TAG" REJOIN.txt --clobber

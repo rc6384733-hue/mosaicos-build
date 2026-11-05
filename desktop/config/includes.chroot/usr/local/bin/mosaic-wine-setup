@@ -1,0 +1,30 @@
+#!/bin/sh
+# Prepara un prefijo Wine32 único por usuario, compatible con Windows 7.
+set -eu
+export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
+export WINEARCH=win32
+export WINEDEBUG="${WINEDEBUG:--all}"
+export WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-mscoree,mshtml=}"
+
+[ -n "${HOME:-}" ] || exit 0
+command -v wine >/dev/null 2>&1 || exit 0
+
+marker="$HOME/.config/mosaic/wine-ready"
+[ -f "$marker" ] && exit 0
+mkdir -p "$HOME/.config/mosaic"
+
+lock="$HOME/.config/mosaic/wine-setup.lock"
+mkdir "$lock" 2>/dev/null || exit 0
+cleanup() { rmdir "$lock" 2>/dev/null || true; }
+trap cleanup EXIT HUP INT TERM
+
+if [ ! -d "$WINEPREFIX" ]; then
+  wineboot -u >/dev/null 2>&1 || true
+fi
+# Windows 7 es el modo con mejor compatibilidad para aplicaciones Win32 antiguas.
+wine reg add 'HKCU\Software\Wine' /v Version /d win7 /f >/dev/null 2>&1 || true
+wine reg add 'HKCU\Software\Wine\WineDbg' /v ShowCrashDialog /t REG_DWORD /d 0 /f >/dev/null 2>&1 || true
+# Registrar asociaciones de archivos dentro del prefijo.
+wine reg add 'HKCU\Software\Wine\FileOpenAssociations' /v 'Enable' /t REG_DWORD /d 0 /f >/dev/null 2>&1 || true
+
+date > "$marker"

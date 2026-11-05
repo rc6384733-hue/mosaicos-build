@@ -1,0 +1,21 @@
+#!/bin/sh
+# Centro de compatibilidad con aplicaciones Windows (Wine32).
+set -eu
+if ! command -v yad >/dev/null 2>&1; then
+  printf 'MosaicOS · Aplicaciones Windows\n\nAbre un .exe con: mosaic-run-exe archivo.exe\nConfigura Wine con: winecfg\n\nWine32 solo ejecuta programas Windows de 32 bits.\n'
+  exit 0
+fi
+
+while :; do
+  yad --title='MosaicOS · Aplicaciones Windows' --width=660 --height=380 \
+    --text='<b>Compatibilidad con programas Windows</b>\n\nWine32 está preinstalado y configurado como Windows 7.\nPuedes abrir instaladores y programas .exe de <b>32 bits</b>.\n\nLos programas de 64 bits no se pueden ejecutar en esta edición i386.\nLa compatibilidad depende de cada aplicación; no es universal.' \
+    --button='Abrir un .exe:0' --button='Configurar Wine:2' --button='Unidad C::3' --button='Desinstalar:4' --button='Cerrar:1'
+  rc=$?
+  case "$rc" in
+    0) /usr/local/bin/mosaic-run-exe ;;
+    2) winecfg ;;
+    3) if [ -d "$HOME/.wine/drive_c" ]; then pcmanfm-qt "$HOME/.wine/drive_c"; else yad --info --text='Wine todavía no ha creado su unidad C:. Abre un .exe primero.'; fi ;;
+    4) wine uninstaller ;;
+    *) exit 0 ;;
+  esac
+done

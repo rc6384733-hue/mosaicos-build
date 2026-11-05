@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <radialGradient id="sky" cx="50%" cy="42%" r="78%">
+      <stop offset="0" stop-color="#1b6fae"/>
+      <stop offset=".38" stop-color="#0d4a80"/>
+      <stop offset=".72" stop-color="#072c50"/>
+      <stop offset="1" stop-color="#031322"/>
+    </radialGradient>
+    <linearGradient id="ribbon1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9fe8ff" stop-opacity=".06"/>
+      <stop offset=".42" stop-color="#bdefff" stop-opacity=".65"/>
+      <stop offset=".58" stop-color="#5fc8f4" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#1a7fc4" stop-opacity=".04"/>
+    </linearGradient>
+    <linearGradient id="ribbon2" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#43b4e8" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#a9ecff" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#1a6da8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="ribbon3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2c91c9" stop-opacity="0"/>
+      <stop offset=".4" stop-color="#8fddff" stop-opacity=".35"/>
+      <stop offset=".62" stop-color="#d8f7ff" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#2c91c9" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="22" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="light" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#dff8ff" stop-opacity=".8"/>
+      <stop offset=".5" stop-color="#77d3f5" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#0b3d66" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="72%">
+      <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".55"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <ellipse cx="1010" cy="470" rx="720" ry="480" fill="url(#light)" opacity=".55" filter="url(#soft)"/>
+
+  <g filter="url(#soft)">
+    <path d="M-120 860 C 260 700, 520 980, 840 790 S 1420 470, 2050 640 L 2050 1160 L -120 1160 Z" fill="url(#ribbon1)" opacity=".8"/>
+    <path d="M-160 960 C 300 760, 660 1040, 1000 860 S 1560 590, 2080 760 L 2080 1160 L -160 1160 Z" fill="url(#ribbon3)" opacity=".55"/>
+    <path d="M-80 560 C 260 380, 540 700, 900 520 S 1500 250, 2020 420" fill="none" stroke="url(#ribbon2)" stroke-width="90" stroke-linecap="round" opacity=".5"/>
+    <path d="M-40 380 C 360 260, 620 520, 980 340 S 1580 90, 2020 240" fill="none" stroke="url(#ribbon2)" stroke-width="44" stroke-linecap="round" opacity=".32"/>
+    <path d="M120 760 C 520 560, 760 840, 1180 640 S 1680 420, 1980 520" fill="none" stroke="url(#ribbon2)" stroke-width="18" stroke-linecap="round" opacity=".55"/>
+  </g>
+
+  <g opacity=".9" filter="url(#glow)">
+    <path d="M240 820 C 420 690, 560 860, 760 740 S 1120 560, 1320 660" fill="none" stroke="#d9f7ff" stroke-width="3" opacity=".55"/>
+    <path d="M1040 300 C 1200 210, 1360 300, 1500 230 S 1740 170, 1860 240" fill="none" stroke="#e7fbff" stroke-width="2" opacity=".5"/>
+    <path d="M520 250 C 660 180, 800 260, 900 200" fill="none" stroke="#bcefff" stroke-width="2" opacity=".35"/>
+  </g>
+
+  <g fill="#eafcff" opacity=".8">
+    <circle cx="330" cy="220" r="2.5"/><circle cx="420" cy="330" r="1.6"/>
+    <circle cx="860" cy="170" r="2.2"/><circle cx="1280" cy="120" r="1.5"/>
+    <circle cx="1620" cy="270" r="2.4"/><circle cx="1750" cy="160" r="1.4"/>
+    <circle cx="1530" cy="640" r="1.8"/><circle cx="1180" cy="820" r="2.1"/>
+    <circle cx="620" cy="600" r="1.5"/><circle cx="300" cy="520" r="1.8"/>
+    <circle cx="980" cy="460" r="1.4"/><circle cx="700" cy="120" r="1.7"/>
+  </g>
+
+  <rect width="1920" height="1080" fill="url(#vignette)"/>
+</svg>

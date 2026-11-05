@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=MosaicOS Aero Compositor
+Comment=Sombras y transparencias del escritorio
+Exec=picom --config /etc/xdg/picom.conf
+Terminal=false
+NoDisplay=true
+OnlyShowIn=LXQt;
+X-GNOME-Autostart-enabled=true

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Preparar Wine de MosaicOS
+Comment=Inicializa el prefijo Win32 y configura compatibilidad Windows 7
+Exec=/usr/local/bin/mosaic-wine-setup
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Phase=Applications

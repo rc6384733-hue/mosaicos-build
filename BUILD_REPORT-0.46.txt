@@ -1,0 +1,20 @@
+MosaicOS 0.46 — informe de validación
+
+Resultado: pruebas estáticas correctas.
+Comando: ./tests/validate_046.sh
+
+Validado:
+- Sintaxis shell de build.sh, prepare-build-host.sh y mosaic-compat.
+- Perfiles declarados amd64/Trixie e i386/Bookworm.
+- Metadatos MosaicOS 0.46.
+- Presencia de LXQt mínimo y ausencia del metapaquete task-lxqt-desktop.
+- Herramientas de compatibilidad y utilidades heredadas.
+- Entradas .desktop del Centro, Configuración y Aplicaciones Mosaic.
+
+No validado:
+- Construcción de ISO.
+- Arranque en QEMU o hardware físico.
+- Consumo RAM/CPU.
+- Compatibilidad de periféricos o aplicaciones reales.
+
+El resultado no debe interpretarse como una versión instalable lista para distribución.

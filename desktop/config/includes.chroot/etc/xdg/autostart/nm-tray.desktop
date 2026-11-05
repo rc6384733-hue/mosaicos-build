@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Network Manager Tray
+Comment=Indicador de red de MosaicOS
+Exec=nm-tray
+Terminal=false
+NoDisplay=true
+OnlyShowIn=LXQt;
+X-GNOME-Autostart-enabled=true

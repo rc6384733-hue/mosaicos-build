@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+printf 'MOSAICOS · INFORMACIÓN DEL EQUIPO\n==================================\n\n'
+printf 'Equipo: '; hostname
+printf 'Sistema: '; . /etc/os-release; printf '%s %s\n' "$PRETTY_NAME" "${VERSION_ID:-}"
+printf 'Kernel: '; uname -sr
+printf 'Arquitectura: '; dpkg --print-architecture 2>/dev/null || uname -m
+printf '\nCPU\n'; (lscpu 2>/dev/null | sed -n '1,18p') || grep -m1 'model name' /proc/cpuinfo || true
+printf '\nMEMORIA\n'; free -h 2>/dev/null || grep -E 'MemTotal|MemAvailable' /proc/meminfo
+printf '\nDISCOS\n'; lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS 2>/dev/null || df -h
+printf '\nGRÁFICOS / PCI\n'; lspci 2>/dev/null | grep -Ei 'vga|3d|display|network|ethernet|audio' || echo 'No se pudo consultar PCI.'
+printf '\nRED\n'; nmcli device status 2>/dev/null || ip -brief link 2>/dev/null || true
+printf '\nEste informe es de solo lectura.\n'

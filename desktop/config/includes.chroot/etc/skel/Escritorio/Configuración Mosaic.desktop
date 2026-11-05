@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Configuración Mosaic
+Comment=Pantalla, red, sonido, apariencia y sistema
+Exec=/usr/local/bin/mosaic-settings
+Icon=preferences-system
+Terminal=false
+Categories=Settings;

@@ -1,0 +1,16 @@
+MosaicOS 0.48 — informe de cambios y validación
+
+[HECHO] El constructor copia la configuración a un workspace separado por arquitectura.
+[HECHO] Corrige un fallo de 0.47: elimina el perfil de paquetes de la arquitectura opuesta antes de ejecutar live-build.
+[HECHO] Elimina la comprobación engañosa con apt-cache del host, cuyos índices pueden pertenecer a otra suite.
+[HECHO] Añade comprobaciones previas de herramientas, host, espacio libre y emulación QEMU para el objetivo i386.
+[HECHO] Añade pruebas estáticas específicas para estas correcciones.
+
+[VALIDADO] Sintaxis POSIX sh de los scripts desktop/*.sh.
+[VALIDADO] Pruebas estáticas validate_047.py y validate_048.py.
+[VALIDADO] No hay archivos __pycache__ en el paquete distribuible.
+[VALIDADO] Integridad del archivo ZIP y SHA-256 generado al empaquetar.
+
+[NO VALIDADO] No se construyeron ISO: este entorno no dispone de live-build, debootstrap, xorriso ni mksquashfs.
+[NO VALIDADO] No se ejecutó QEMU ni se probó hardware físico.
+[NO VALIDADO] El cross-build i386 debe probarse en un host Debian amd64 con binfmt/QEMU user emulation; el preflight solo detecta dependencias.

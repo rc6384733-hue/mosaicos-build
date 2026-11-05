@@ -1,0 +1,17 @@
+area,status,progress,notes
+ISO i386 recipe,implemented,100,live-build bookworm i386 with GRUB-PC and Debian installer
+Package profile,validated,100,227 packages checked on packages.debian.org/bookworm/i386
+Win7-like desktop,implemented,100,LXQt + Openbox MosaicAero theme and Spanish configuration
+Windows compatibility,implemented,90,Wine32 launcher and Win7 prefix; 64-bit rejected
+Linux application support,implemented,100,Native i386 packages plus APT/Synaptic/Mosaic Store
+Mosaic Store catalog,implemented,100,17 entries with architecture filtering
+Docker build path,implemented,100,Dockerfile and Windows/Linux wrappers
+GitHub Actions build,implemented,100,Workflow publishes ISO and build log
+Static validation,passing,100,tests/validate_050.py passes locally
+ISO build,not-built,0,Requires Debian/Docker/CI with network
+QEMU boot test,not-tested,0,Requires generated ISO
+Hardware test,not-tested,0,Requires 32-bit or BIOS-capable hardware
+Disk installation test,not-tested,0,Debian live installer not exercised
+Windows app compatibility,not-tested,0,No per-application matrix executed
+1GB RAM benchmark,not-tested,0,Requires QEMU or physical hardware
+USB persistence,not-tested,0,Not exercised

@@ -1,0 +1,2 @@
+# MosaicOS Aero — sesión live con sudo sin contraseña (usuario live)
+mosaic ALL=(ALL) NOPASSWD: ALL

@@ -1,0 +1,19 @@
+#!/bin/sh
+# Bienvenida gráfica con accesos a las tareas habituales.
+set -eu
+if ! command -v yad >/dev/null 2>&1; then
+  exec /usr/local/bin/mosaic-welcome
+fi
+TMP=$(mktemp)
+trap 'rm -f "$TMP"' EXIT HUP INT TERM
+/usr/local/bin/mosaic-welcome > "$TMP"
+yad --text-info --title='Bienvenido a MosaicOS 0.50 Aero' --width=760 --height=560 \
+  --filename="$TMP" --wrap \
+  --button='Aplicaciones Windows:2' --button='Mosaic Store:3' --button='Instalar MosaicOS:4' --button='Cerrar:1'
+rc=$?
+case "$rc" in
+  2) exec /usr/local/bin/mosaic-windows ;;
+  3) exec /usr/local/bin/mosaic-apps ;;
+  4) exec /usr/local/bin/mosaic-install-disk ;;
+  *) exit 0 ;;
+esac

@@ -1,0 +1,14 @@
+MosaicOS Daily 0.43 — informe de compilación
+============================================
+
+Esta entrega mejora la preparación y validación previa del host de compilación.
+
+Cambios:
+- Validaciones explícitas de sistema anfitrión Debian y arquitectura amd64.
+- Comprobación de live-build, debootstrap, xorriso y mksquashfs.
+- Umbral mínimo de 25 GiB libres.
+- Comprobación de los nombres de paquetes contra APT antes de iniciar live-build.
+- Script para preparar el host con herramientas de creación de ISO y QEMU.
+- Guía de verificación y arranque virtual.
+
+Limitación importante: el entorno de creación de este ZIP no tiene las herramientas necesarias para construir la ISO. Por eso no se afirma que la imagen haya sido creada o arrancada.

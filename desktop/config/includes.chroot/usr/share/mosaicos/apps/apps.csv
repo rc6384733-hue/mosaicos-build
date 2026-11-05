@@ -1,0 +1,18 @@
+id,name,category,description,package,architectures,weight,preinstalled
+netsurf,Netsurf,Navegación,Navegador ligero para páginas sencillas,netsurf-gtk,amd64|i386,ligero,no
+firefox-esr,Firefox ESR,Navegación,Compatibilidad web amplia; puede consumir mucha RAM,firefox-esr,amd64|i386,alto,no
+abiword,AbiWord,Oficina,Procesador de textos ligero,abiword,amd64|i386,ligero,no
+gnumeric,Gnumeric,Oficina,Hoja de cálculo ligera,gnumeric,amd64|i386,ligero,no
+mpv,MPV,Multimedia,Reproductor multimedia eficiente,mpv,amd64|i386,medio,no
+audacious,Audacious,Multimedia,Reproductor de música ligero,audacious,amd64|i386,ligero,no
+ristretto,Ristretto,Multimedia,Visor de imágenes sencillo,ristretto,amd64|i386,ligero,no
+geany,Geany,Desarrollo,Editor de código ligero,geany,amd64|i386,ligero,no
+git,Git,Desarrollo,Control de versiones distribuido,git,amd64|i386,ligero,no
+gparted,GParted,Sistema,Editor gráfico de particiones; requiere permisos,gparted,amd64|i386,medio,no
+synaptic,Synaptic,Sistema,Gestor gráfico de paquetes,synaptic,amd64|i386,medio,no
+filezilla,FileZilla,Internet,Cliente FTP y SFTP,filezilla,amd64|i386,medio,no
+wine,Wine32,Compatibilidad Windows,Ejecuta programas Windows de 32 bits,wine,amd64|i386,medio,no
+winetricks,Winetricks,Compatibilidad Windows,Utilidades para componentes de Windows,winetricks,amd64|i386,ligero,no
+dosbox,DOSBox,Juegos,Emulador de MS-DOS,dosbox,amd64|i386,ligero,no
+scummvm,ScummVM,Juegos,Intérprete de aventuras gráficas clásicas,scummvm,amd64|i386,ligero,no
+keepassxc,KeePassXC,Seguridad,Gestor de contraseñas,keepassxc,amd64|i386,medio,no

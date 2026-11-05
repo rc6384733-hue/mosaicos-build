@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Comprobar estado de MosaicOS
+Comment=Diagnóstico básico de almacenamiento, memoria y red
+Exec=qterminal -e mosaic-health
+Icon=utilities-system-monitor
+Terminal=false
+Categories=System;Utility;

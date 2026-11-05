@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Action
+Name=Ejecutar con Wine
+Icon=wine
+Profiles=wine;
+
+[MIME Type]
+MimeType=application/x-ms-dos-executable;application/x-msdownload;application/x-msi;application/x-ms-shortcut;
+
+[Profile wine]
+Name=Ejecutar con Wine
+Exec=mosaic-run-exe %f
+Icon=wine

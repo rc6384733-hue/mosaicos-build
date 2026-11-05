@@ -1,0 +1,113 @@
+# MosaicOS Aero — tema Openbox inspirado en Windows 7
+# Los botones son máscaras XBM; el color de la imagen se define aquí.
+
+padding.width : 4
+padding.height : 4
+border.width : 1
+window.client.padding.width : 0
+window.client.padding.height : 0
+window.handle.width : 0
+menu.border.width : 1
+menu.overlap.x : 0
+menu.overlap.y : 0
+
+window.active.border.color : #6d9fc9
+window.inactive.border.color : #aebfcd
+menu.border.color : #7ba7c9
+window.active.client.color : #ffffff
+window.inactive.client.color : #f7fafc
+
+window.active.title.bg : Raised Gradient Vertical
+window.active.title.bg.color : #dcefff
+window.active.title.bg.colorTo : #a6cdeb
+window.active.title.bg.border.color : #6d9fc9
+window.active.title.bg.highlight : #ffffff
+window.active.title.bg.shadow : #7fa9c9
+
+window.inactive.title.bg : Raised Gradient Vertical
+window.inactive.title.bg.color : #f4f8fb
+window.inactive.title.bg.colorTo : #d9e4ed
+window.inactive.title.bg.border.color : #aebfcd
+window.inactive.title.bg.highlight : #ffffff
+window.inactive.title.bg.shadow : #c3d2dd
+
+window.active.label.bg : Parentrelative
+window.active.label.text.color : #0b3a5e
+window.inactive.label.bg : Parentrelative
+window.inactive.label.text.color : #6c7f8f
+
+window.active.label.text.font : shadow=n
+window.inactive.label.text.font : shadow=n
+menu.items.font : shadow=n
+menu.title.text.font : shadow=n
+
+window.active.handle.bg : Parentrelative
+window.inactive.handle.bg : Parentrelative
+window.active.grip.bg : Parentrelative
+window.inactive.grip.bg : Parentrelative
+window.label.text.justify : Left
+menu.title.text.justify : Center
+
+window.active.button.unpressed.bg : Parentrelative
+window.active.button.unpressed.image.color : #174a73
+window.active.button.hover.bg : Flat Solid
+window.active.button.hover.bg.color : #e8f6ff
+window.active.button.hover.image.color : #0b3a5e
+window.active.button.pressed.bg : Flat Solid
+window.active.button.pressed.bg.color : #b8ddf5
+window.active.button.pressed.image.color : #082c47
+window.active.button.disabled.bg : Parentrelative
+window.active.button.disabled.image.color : #a8b8c5
+window.active.button.toggled.unpressed.bg : Parentrelative
+window.active.button.toggled.unpressed.image.color : #174a73
+window.active.button.toggled.hover.bg : Flat Solid
+window.active.button.toggled.hover.bg.color : #e8f6ff
+window.active.button.toggled.hover.image.color : #0b3a5e
+window.active.button.toggled.pressed.bg : Flat Solid
+window.active.button.toggled.pressed.bg.color : #b8ddf5
+window.active.button.toggled.pressed.image.color : #082c47
+
+window.inactive.button.unpressed.bg : Parentrelative
+window.inactive.button.unpressed.image.color : #7f94a5
+window.inactive.button.hover.bg : Flat Solid
+window.inactive.button.hover.bg.color : #eef6fc
+window.inactive.button.hover.image.color : #4d6577
+window.inactive.button.pressed.bg : Flat Solid
+window.inactive.button.pressed.bg.color : #d8e8f4
+window.inactive.button.pressed.image.color : #3b5162
+window.inactive.button.disabled.bg : Parentrelative
+window.inactive.button.disabled.image.color : #b9c6d0
+window.inactive.button.toggled.unpressed.bg : Parentrelative
+window.inactive.button.toggled.unpressed.image.color : #7f94a5
+window.inactive.button.toggled.hover.bg : Flat Solid
+window.inactive.button.toggled.hover.bg.color : #eef6fc
+window.inactive.button.toggled.hover.image.color : #4d6577
+window.inactive.button.toggled.pressed.bg : Flat Solid
+window.inactive.button.toggled.pressed.bg.color : #d8e8f4
+window.inactive.button.toggled.pressed.image.color : #3b5162
+
+menu.items.bg : Flat Solid
+menu.items.bg.color : #f7fbff
+menu.items.text.color : #173b58
+menu.items.disabled.text.color : #9aaab8
+menu.items.active.bg : Flat Gradient Vertical
+menu.items.active.bg.color : #e3f3ff
+menu.items.active.bg.colorTo : #cfe8fa
+menu.items.active.text.color : #0a2a44
+menu.items.active.disabled.text.color : #93a8b8
+menu.separator.color : #b9d2e6
+menu.title.bg : Raised Gradient Vertical
+menu.title.bg.color : #d7ecfb
+menu.title.bg.colorTo : #9cc8ea
+menu.title.bg.border.color : #6d9fc9
+menu.title.text.color : #0b3a5e
+menu.title.text.font : shadow=n
+
+osd.bg : Flat Solid
+osd.bg.color : #0b1a2b
+osd.label.bg : Parentrelative
+osd.label.text.color : #ffffff
+osd.hilight.bg : Flat Solid
+osd.hilight.bg.color : #2f7ebc
+osd.unhilight.bg : Flat Solid
+osd.unhilight.bg.color : #16293d

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Crear informe del sistema
+Comment=Guarda un diagnóstico de hardware y software
+Exec=qterminal -e /usr/local/bin/mosaic-report
+Icon=utilities-system-monitor
+Terminal=false
+Categories=System;Utility;

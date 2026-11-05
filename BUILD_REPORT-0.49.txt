@@ -1,0 +1,10 @@
+MosaicOS 0.49 — validación local
+
+- Catálogo CSV parseable y filtrado por arquitectura: probado.
+- mosaic-store: sintaxis Python compilada correctamente.
+- mosaic-store: comandos list/search/info y validaciones cubiertas por pruebas.
+- Instalación: confirmación explícita, APT con --no-install-recommends y sin shell=True.
+- Perfiles amd64/i386: Python 3 y selección multimedia ligera añadidos.
+- ISO: no construida.
+- Arranque QEMU/hardware: no probado.
+- Disponibilidad de paquetes: se resuelve contra repositorios APT en el equipo destino.

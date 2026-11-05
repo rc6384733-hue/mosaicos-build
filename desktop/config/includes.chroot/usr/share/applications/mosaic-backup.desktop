@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Copia de seguridad Mosaic
+Comment=Crear o revisar copias de tus archivos personales
+Exec=mosaic-backup
+Icon=drive-harddisk
+Categories=System;Utility;
+Terminal=false

@@ -1,0 +1,8 @@
+¡Bienvenido a MosaicOS 0.50 Aero (i386)!
+
+Este es un sistema live de 32 bits. Puedes probarlo sin instalar nada.
+Para instalarlo en el disco, usa «Instalar MosaicOS» en el escritorio o
+la entrada «Instalar» del menú de arranque.
+
+Wine32 está incluido para aplicaciones Windows de 32 bits. No es compatible
+con programas Windows de 64 bits. Consulta la guía de bienvenida.

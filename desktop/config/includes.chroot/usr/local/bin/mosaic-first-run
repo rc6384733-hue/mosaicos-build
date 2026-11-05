@@ -1,0 +1,10 @@
+#!/bin/sh
+# Asistente de primer inicio. No se repite tras la primera ejecución.
+set -eu
+[ -n "${HOME:-}" ] || exit 0
+marker="$HOME/.config/mosaic/first-run-done"
+[ -f "$marker" ] && exit 0
+mkdir -p "$HOME/.config/mosaic"
+touch "$marker"
+sleep 3
+exec /usr/local/bin/mosaic-welcome-gui

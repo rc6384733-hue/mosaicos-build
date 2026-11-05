@@ -1,0 +1,50 @@
+#!/bin/sh
+# Ejecuta aplicaciones Windows de 32 bits con Wine32.
+set -eu
+export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
+export WINEARCH=win32
+export WINEDEBUG="${WINEDEBUG:--all}"
+export WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-mscoree,mshtml=}"
+
+msg() {
+  if command -v yad >/dev/null 2>&1; then
+    yad --error --title='MosaicOS · Aplicaciones Windows' --width=520 --text="$1" 2>/dev/null || true
+  else
+    printf '%s\n' "$1" >&2
+  fi
+}
+
+filearg=${1:-}
+if [ -z "$filearg" ]; then
+  if command -v yad >/dev/null 2>&1; then
+    filearg=$(yad --file --title='Abrir aplicación Windows' --width=760 --height=520 \
+      --file-filter='Programas Windows | *.exe *.msi *.bat *.cmd *.EXE *.MSI *.BAT *.CMD' \
+      --file-filter='Todos los archivos | *' 2>/dev/null) || exit 0
+  else
+    printf 'Uso: mosaic-run-exe archivo.exe\n' >&2
+    exit 2
+  fi
+fi
+[ -f "$filearg" ] || { msg "No se encontró el archivo:\n$filearg"; exit 1; }
+
+command -v wine >/dev/null 2>&1 || { msg 'Wine32 no está instalado en este sistema.'; exit 1; }
+/usr/local/bin/mosaic-wine-setup --quiet || true
+
+kind=$(file -b "$filearg" 2>/dev/null || true)
+case "$kind" in
+  *PE32+*|*x86-64*|*x86_64*)
+    msg "Este programa es de 64 bits y MosaicOS 0.50 es un sistema de 32 bits.\n\nWindows de 64 bits requiere una edición amd64 de MosaicOS."
+    exit 1
+    ;;
+  *"MS-DOS executable"*)
+    if command -v dosbox >/dev/null 2>&1; then exec dosbox "$filearg"; fi
+    msg 'Este programa parece ser de MS-DOS. Instala DOSBox desde Mosaic Store.'
+    exit 1
+    ;;
+esac
+
+case "${filearg##*.}" in
+  msi|MSI) exec wine msiexec /i "$filearg" ;;
+  bat|cmd|BAT|CMD) exec wine cmd /c "$filearg" ;;
+  *) exec wine "$filearg" ;;
+esac

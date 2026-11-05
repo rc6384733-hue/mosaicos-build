@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Actualizar MosaicOS
+Comment=Buscar e instalar actualizaciones de Debian
+Exec=qterminal -e /usr/local/bin/mosaic-update
+Icon=system-software-update
+Terminal=false
+Categories=System;Settings;

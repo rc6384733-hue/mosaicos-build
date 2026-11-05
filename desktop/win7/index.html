@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>MosaicOS 0.50 — Aero Desktop</title>
+<link rel="stylesheet" href="assets/win7.css">
+</head>
+<body>
+
+<!-- ================= BOOT ================= -->
+<div id="boot-screen" class="screen">
+  <div class="boot-inner">
+    <div class="boot-logo">
+      <span class="boot-tile t1"></span><span class="boot-tile t2"></span>
+      <span class="boot-tile t3"></span><span class="boot-tile t4"></span>
+      <span class="boot-name">MosaicOS</span>
+    </div>
+    <div class="boot-status">Iniciando MosaicOS<span class="dots"><i>.</i><i>.</i><i>.</i></span></div>
+    <div class="boot-bar"><span></span></div>
+  </div>
+  <div class="boot-foot">MosaicOS 0.50 «Aero» &nbsp;·&nbsp; © 2026 MosaicOS Project</div>
+</div>
+
+<!-- ================= LOGIN ================= -->
+<div id="login-screen" class="screen hidden">
+  <div class="login-aurora"></div>
+  <div class="login-brand"><span class="brand-flag"><i></i><i></i><i></i><i></i></span><span>MosaicOS</span></div>
+  <div class="login-center">
+    <div class="login-card">
+      <div class="user-pic">M</div>
+      <div class="user-name" id="login-user">Mosaic</div>
+      <form id="login-form" autocomplete="off">
+        <div class="pw-row">
+          <input type="password" id="login-pass" placeholder="Contraseña (opcional)" aria-label="Contraseña">
+          <button type="submit" id="login-go" title="Iniciar sesión">→</button>
+        </div>
+      </form>
+      <div class="login-hint">Presione Entrar para iniciar sesión</div>
+    </div>
+    <div class="login-loading hidden" id="login-loading"><span class="spinner"></span><p>Preparando el escritorio…</p></div>
+  </div>
+  <div class="login-foot">
+    <button class="login-access" id="login-access">Accesibilidad</button>
+    <button class="login-power" id="login-power" title="Apagar">⏻</button>
+  </div>
+</div>
+
+<!-- ================= DESKTOP ================= -->
+<div id="desktop" class="hidden">
+  <div id="wallpaper-layer"></div>
+
+  <div id="desktop-icons" role="list" aria-label="Iconos del escritorio"></div>
+
+  <div id="gadgets">
+    <div class="gadget gadget-clock" id="gadget-clock">
+      <div class="analog">
+        <span class="hand hour"></span><span class="hand minute"></span><span class="hand second"></span>
+        <span class="pin"></span>
+      </div>
+      <div class="digital"><span id="gadget-time">--:--</span><small id="gadget-date"></small></div>
+    </div>
+    <div class="gadget gadget-weather" id="gadget-weather">
+      <div class="wx-top"><svg class="ico wx-ico"><use href="#i-weather"></use></svg><div><b>22°</b><small>Despejado</small></div></div>
+      <div class="wx-city">Mosaic City</div>
+      <div class="wx-week"><span>L 21°</span><span>M 23°</span><span>X 24°</span><span>J 22°</span></div>
+    </div>
+  </div>
+
+  <div id="windows-layer"></div>
+  <div id="snap-preview" class="hidden"></div>
+  <div id="alt-tab" class="hidden"></div>
+
+  <!-- TASKBAR -->
+  <div id="taskbar">
+    <button id="start-button" title="Inicio (Ctrl+Esc)" aria-label="Inicio"><span class="start-orb"><span class="orb-glint"></span></span></button>
+    <div id="quick-launch"></div>
+    <div id="task-buttons"></div>
+    <div id="tray">
+      <button id="tray-show-desktop" title="Mostrar escritorio" aria-label="Mostrar escritorio"></button>
+      <button class="tray-icon" id="tray-network" title="Red: conectada" aria-label="Red"><svg class="ico"><use href="#i-network"></use></svg></button>
+      <button class="tray-icon" id="tray-volume" title="Volumen" aria-label="Volumen"><svg class="ico"><use href="#i-volume"></use></svg></button>
+      <button id="tray-clock" title="Fecha y hora"><span id="clock-time">--:--</span><span id="clock-date"></span></button>
+    </div>
+    <div id="show-desktop" title="Mostrar escritorio"></div>
+  </div>
+
+  <!-- START MENU -->
+  <div id="start-menu" class="hidden">
+    <div class="sm-left">
+      <div class="sm-programs" id="sm-programs"></div>
+      <button class="sm-all" id="sm-all"><span>Todos los programas</span><span class="sm-arrow">▸</span></button>
+      <div class="sm-search"><svg class="ico"><use href="#i-search"></use></svg><input id="sm-search" placeholder="Buscar programas y archivos" aria-label="Buscar"></div>
+    </div>
+    <div class="sm-right">
+      <div class="sm-user"><span class="sm-avatar">M</span><span id="sm-username">Mosaic</span></div>
+      <nav class="sm-links" id="sm-links"></nav>
+      <div class="sm-power-row">
+        <button id="sm-shutdown" class="sm-shutdown">Apagar</button>
+        <button id="sm-power-arrow" class="sm-power-arrow" aria-label="Opciones de energía">▸</button>
+      </div>
+    </div>
+    <div id="all-programs" class="hidden"></div>
+  </div>
+
+  <!-- flyouts, menus, overlays -->
+  <div id="tray-flyout" class="hidden"></div>
+  <div id="context-menu" class="hidden"></div>
+  <div id="toasts"></div>
+  <div id="dialog-layer"></div>
+
+  <div id="lock-screen" class="screen hidden">
+    <div class="lock-blur"></div>
+    <div class="lock-user"><div class="user-pic">M</div><div class="user-name" id="lock-name">Mosaic</div><div class="lock-state">Bloqueado</div>
+      <form id="unlock-form"><input type="password" id="unlock-pass" placeholder="Contraseña (opcional)" autocomplete="off"><button type="submit">→</button></form>
+      <small>Presione Entrar para desbloquear</small>
+    </div>
+    <div class="lock-foot"><span id="lock-clock"></span><button id="lock-power">⏻</button></div>
+  </div>
+
+  <div id="power-overlay" class="hidden">
+    <div class="power-box">
+      <span class="spinner big"></span>
+      <p id="power-text">Apagando…</p>
+    </div>
+  </div>
+</div>
+
+<template id="tpl-window">
+  <section class="window" tabindex="-1">
+    <header class="win-titlebar">
+      <svg class="ico win-icon"><use href="#i-file"></use></svg>
+      <span class="win-title"></span>
+      <div class="win-controls">
+        <button class="wc wc-min" title="Minimizar" aria-label="Minimizar"><svg viewBox="0 0 12 12"><path d="M2 9h8" stroke="currentColor" stroke-width="1.5"/></svg></button>
+        <button class="wc wc-max" title="Maximizar" aria-label="Maximizar"><svg viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button>
+        <button class="wc wc-close" title="Cerrar" aria-label="Cerrar"><svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      </div>
+    </header>
+    <div class="win-body"></div>
+    <div class="win-resize n" data-dir="n"></div><div class="win-resize s" data-dir="s"></div>
+    <div class="win-resize e" data-dir="e"></div><div class="win-resize w" data-dir="w"></div>
+    <div class="win-resize ne" data-dir="ne"></div><div class="win-resize nw" data-dir="nw"></div>
+    <div class="win-resize se" data-dir="se"></div><div class="win-resize sw" data-dir="sw"></div>
+  </section>
+</template>
+
+<!-- ================= ICON SPRITE ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <linearGradient id="g-screen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fd8ff"/><stop offset=".45" stop-color="#2a86c8"/><stop offset="1" stop-color="#0b3f70"/></linearGradient>
+  <linearGradient id="g-folder" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset=".5" stop-color="#f5c443"/><stop offset="1" stop-color="#d99a1f"/></linearGradient>
+  <linearGradient id="g-folder-back" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8b53b"/><stop offset="1" stop-color="#c88c12"/></linearGradient>
+  <linearGradient id="g-page" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e7edf2"/></linearGradient>
+  <linearGradient id="g-blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a7e1ff"/><stop offset=".5" stop-color="#3a97d6"/><stop offset="1" stop-color="#125c96"/></linearGradient>
+  <linearGradient id="g-silver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5f8fa"/><stop offset=".5" stop-color="#c3ccd5"/><stop offset="1" stop-color="#8e9aa6"/></linearGradient>
+  <linearGradient id="g-red" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6a6a0"/><stop offset=".5" stop-color="#cf3b31"/><stop offset="1" stop-color="#8d1712"/></linearGradient>
+  <linearGradient id="g-green" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bcec9a"/><stop offset=".5" stop-color="#54a52c"/><stop offset="1" stop-color="#2c6d14"/></linearGradient>
+  <linearGradient id="g-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b8"/><stop offset=".5" stop-color="#f2c53d"/><stop offset="1" stop-color="#b8860b"/></linearGradient>
+  <linearGradient id="g-dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b6670"/><stop offset=".5" stop-color="#343c44"/><stop offset="1" stop-color="#14191e"/></linearGradient>
+  <linearGradient id="g-console" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22303c"/><stop offset="1" stop-color="#06090c"/></linearGradient>
+  <linearGradient id="g-wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6a56a"/><stop offset="1" stop-color="#8b5a2b"/></linearGradient>
+</defs>
+
+<symbol id="i-computer" viewBox="0 0 48 48">
+  <rect x="4" y="6" width="40" height="29" rx="2.5" fill="url(#g-silver)" stroke="#5a6672" stroke-width="1"/>
+  <rect x="7" y="9" width="34" height="23" rx="1" fill="url(#g-screen)" stroke="#0c3656"/>
+  <path d="M8 10h32v9L8 27z" fill="#fff" opacity=".18"/>
+  <path d="M18 36h12l2 5H16z" fill="url(#g-silver)" stroke="#5a6672"/>
+  <rect x="12" y="40.5" width="24" height="3" rx="1.4" fill="#6c7884"/>
+  <circle cx="40" cy="34" r="1.6" fill="#8ce46a"/>
+</symbol>
+
+<symbol id="i-folder" viewBox="0 0 48 48">
+  <path d="M3 12h16l4 5h22v24H3z" fill="url(#g-folder-back)" stroke="#a97409"/>
+  <path d="M3 18h42v23H3z" fill="url(#g-folder)" stroke="#b07c0b"/>
+  <path d="M4 19h40v6H4z" fill="#fff" opacity=".28"/>
+</symbol>
+
+<symbol id="i-folder-open" viewBox="0 0 48 48">
+  <path d="M3 12h16l4 5h20v7H3z" fill="url(#g-folder-back)" stroke="#a97409"/>
+  <path d="M3 20h39l-5 19H8z" fill="url(#g-folder)" stroke="#b07c0b"/>
+  <path d="M6 21h33l-3.5 6H8z" fill="#fff" opacity=".25"/>
+</symbol>
+
+<symbol id="i-file" viewBox="0 0 48 48">
+  <path d="M10 3h21l9 9v33H10z" fill="url(#g-page)" stroke="#8b98a4"/>
+  <path d="M31 3v9h9" fill="#dbe4ec" stroke="#8b98a4"/>
+  <path d="M15 20h18M15 25h18M15 30h13" stroke="#9aa8b5" stroke-width="1.6"/>
+</symbol>
+
+<symbol id="i-text" viewBox="0 0 48 48">
+  <path d="M10 3h21l9 9v33H10z" fill="url(#g-page)" stroke="#8b98a4"/>
+  <path d="M31 3v9h9" fill="#dbe4ec" stroke="#8b98a4"/>
+  <path d="M15 18h18M15 23h18M15 28h18M15 33h11" stroke="#4b7fb0" stroke-width="1.8"/>
+</symbol>
+
+<symbol id="i-image" viewBox="0 0 48 48">
+  <rect x="4" y="7" width="40" height="34" rx="2" fill="#eef4f8" stroke="#8393a1"/>
+  <rect x="7" y="10" width="34" height="28" fill="#bfe6fb"/>
+  <circle cx="33" cy="18" r="4" fill="#ffd34d"/>
+  <path d="M7 34l10-13 7 9 5-5 12 13z" fill="#5aa64b"/>
+  <path d="M7 38h34v0H7z" fill="#3b7f33"/>
+</symbol>
+
+<symbol id="i-music" viewBox="0 0 48 48">
+  <path d="M20 34V10l18-4v24" fill="none" stroke="#2f6fa8" stroke-width="3"/>
+  <ellipse cx="15" cy="35" rx="6" ry="4.5" fill="#2f6fa8"/>
+  <ellipse cx="33" cy="31" rx="6" ry="4.5" fill="#2f6fa8"/>
+</symbol>
+
+<symbol id="i-video" viewBox="0 0 48 48">
+  <rect x="4" y="10" width="40" height="28" rx="2" fill="#24313c" stroke="#0d151b"/>
+  <rect x="6" y="12" width="36" height="24" fill="#7fb6d8"/>
+  <path d="M6 18h36M6 30h36M14 12v24M34 12v24" stroke="#24313c" stroke-width="2"/>
+  <path d="M20 18l12 6-12 6z" fill="#fff" opacity=".85"/>
+</symbol>
+
+<symbol id="i-archive" viewBox="0 0 48 48">
+  <rect x="7" y="8" width="34" height="32" rx="2" fill="#c99a5c" stroke="#7a5727"/>
+  <path d="M7 8h34v9H7z" fill="#e0b57a" stroke="#7a5727"/>
+  <rect x="21" y="8" width="6" height="32" fill="#8a642f" opacity=".6"/>
+  <path d="M21 12h6M21 17h6M21 22h6M21 27h6" stroke="#f5e0bd" stroke-width="2"/>
+</symbol>
+
+<symbol id="i-program" viewBox="0 0 48 48">
+  <rect x="5" y="8" width="38" height="32" rx="2" fill="url(#g-blue)" stroke="#14527f"/>
+  <path d="M5 12h38v5H5z" fill="#fff" opacity=".3"/>
+  <circle cx="24" cy="27" r="7" fill="#eaf7ff" stroke="#2b6c99"/>
+  <path d="M24 20v-3M24 37v-3M31 27h3M14 27h3M29 22l2-2M17 32l2-2M29 32l2 2M17 22l2 2" stroke="#2b6c99" stroke-width="2.4"/>
+</symbol>
+
+<symbol id="i-drive" viewBox="0 0 48 48">
+  <rect x="5" y="12" width="38" height="24" rx="3" fill="url(#g-silver)" stroke="#66727e"/>
+  <rect x="9" y="16" width="30" height="10" rx="1" fill="#e9eef3" stroke="#a9b5c0"/>
+  <rect x="9" y="29" width="22" height="3" rx="1.5" fill="#9aa6b2"/>
+  <circle cx="37" cy="30.5" r="2" fill="#63d34f"/>
+</symbol>
+
+<symbol id="i-notepad" viewBox="0 0 48 48">
+  <path d="M9 5h24l8 8v30H9z" fill="url(#g-page)" stroke="#8b98a4"/>
+  <path d="M33 5v8h8" fill="#dbe4ec" stroke="#8b98a4"/>
+  <rect x="9" y="5" width="24" height="7" fill="#4d9bd7"/>
+  <path d="M14 20h20M14 25h20M14 30h20M14 35h13" stroke="#8194a5" stroke-width="1.5"/>
+  <path d="M36 22l7 7-4 4-7-7z" fill="#f2c53d" stroke="#a97c0b"/>
+  <path d="M32 33l4-4-2 6z" fill="#33414d"/>
+</symbol>
+
+<symbol id="i-paint" viewBox="0 0 48 48">
+  <rect x="5" y="7" width="29" height="26" rx="2" fill="#f5f8fa" stroke="#7d8b98"/>
+  <rect x="8" y="10" width="23" height="20" fill="#fff"/>
+  <path d="M10 27l7-9 5 6 4-4 5 7z" fill="#58a84a"/>
+  <circle cx="14" cy="15" r="2.5" fill="#f2c53d"/>
+  <path d="M31 25c8-1 12 4 9 9-2 3-8 3-9-1-1-3 2-5 4-5" fill="#c98a5a" stroke="#7a522f"/>
+  <circle cx="33" cy="30" r="1.6" fill="#3a86c8"/><circle cx="38" cy="27" r="1.6" fill="#d34a3f"/><circle cx="39" cy="33" r="1.6" fill="#59a84c"/>
+  <path d="M37 8l6 6-12 12-6-6z" fill="#a9d8f5" stroke="#4f7c99"/>
+  <path d="M25 20l6 6-3 3-6-6z" fill="#f2c53d" stroke="#a97c0b"/>
+</symbol>
+
+<symbol id="i-calc" viewBox="0 0 48 48">
+  <rect x="9" y="4" width="30" height="40" rx="3" fill="url(#g-silver)" stroke="#5f6b77"/>
+  <rect x="13" y="8" width="22" height="9" rx="1.5" fill="#dff0d8" stroke="#7e9b76"/>
+  <path d="M28 10h4M28 13h4" stroke="#526b4c" stroke-width="1.5"/>
+  <g fill="#4a5662">
+    <rect x="13" y="21" width="5" height="4" rx="1"/><rect x="21" y="21" width="5" height="4" rx="1"/><rect x="29" y="21" width="5" height="4" rx="1"/>
+    <rect x="13" y="28" width="5" height="4" rx="1"/><rect x="21" y="28" width="5" height="4" rx="1"/><rect x="29" y="28" width="5" height="4" rx="1"/>
+    <rect x="13" y="35" width="5" height="4" rx="1"/><rect x="21" y="35" width="5" height="4" rx="1"/>
+  </g>
+  <rect x="29" y="35" width="5" height="4" rx="1" fill="#e07a2c"/>
+</symbol>
+
+<symbol id="i-terminal" viewBox="0 0 48 48">
+  <rect x="3" y="6" width="42" height="36" rx="3" fill="url(#g-console)" stroke="#3b4a57"/>
+  <path d="M3 12h42" stroke="#3b4a57"/>
+  <circle cx="8" cy="9" r="1.5" fill="#e05a4f"/><circle cx="13" cy="9" r="1.5" fill="#e8c34a"/><circle cx="18" cy="9" r="1.5" fill="#6cbf4a"/>
+  <path d="M9 20l6 5-6 5" fill="none" stroke="#d8f5c8" stroke-width="2.5"/>
+  <path d="M19 30h12" stroke="#d8f5c8" stroke-width="2.5"/>
+</symbol>
+
+<symbol id="i-media" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="20" fill="url(#g-blue)" stroke="#0f4d7a"/>
+  <circle cx="24" cy="24" r="15" fill="none" stroke="#dff6ff" stroke-opacity=".55" stroke-width="1.5"/>
+  <path d="M20 15l13 9-13 9z" fill="#fff" stroke="#c6e9ff" stroke-width="1"/>
+  <circle cx="38" cy="10" r="4" fill="#f07f2a" stroke="#a94f0d"/>
+</symbol>
+
+<symbol id="i-browser" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="20" fill="url(#g-blue)" stroke="#0f4d7a"/>
+  <path d="M4 24h40M24 4c7 6 10 13 10 20s-3 14-10 20M24 4c-7 6-10 13-10 20s3 14 10 20" fill="none" stroke="#e6f8ff" stroke-width="1.4" opacity=".7"/>
+  <circle cx="27" cy="24" r="9" fill="none" stroke="#fff" stroke-width="3"/>
+  <path d="M18 24h18" stroke="#fff" stroke-width="3"/>
+  <path d="M27 20c-4 0-7 2-7 5" fill="none" stroke="#fff" stroke-width="3"/>
+</symbol>
+
+<symbol id="i-games" viewBox="0 0 48 48">
+  <path d="M10 18h28c5 0 7 4 8 9l2 9c1 4-3 6-6 3l-7-7H13l-7 7c-3 3-7 1-6-3l2-9c1-5 3-9 8-9z" fill="#3e4a55" stroke="#1c2329"/>
+  <path d="M12 22h6M15 19v6" stroke="#d7e2ea" stroke-width="2.5"/>
+  <circle cx="34" cy="21" r="2.5" fill="#e05a4f"/><circle cx="39" cy="25" r="2.5" fill="#f2c53d"/><circle cx="30" cy="26" r="2.5" fill="#6cbf4a"/>
+  <rect x="18" y="29" width="12" height="4" rx="2" fill="#7d8b98"/>
+</symbol>
+
+<symbol id="i-mine" viewBox="0 0 48 48">
+  <circle cx="23" cy="27" r="13" fill="#20272d"/>
+  <circle cx="19" cy="23" r="4" fill="#fff" opacity=".25"/>
+  <path d="M23 14V7M23 40v7M10 27H3M36 27h7M14 18l-5-5M32 36l5 5M32 18l5-5M14 36l-5 5" stroke="#20272d" stroke-width="3"/>
+  <path d="M23 8c4-4 9-3 11 0" fill="none" stroke="#c98a2a" stroke-width="2.5"/>
+  <circle cx="35" cy="7" r="3" fill="#f2a53d"/>
+</symbol>
+
+<symbol id="i-cards" viewBox="0 0 48 48">
+  <rect x="7" y="10" width="24" height="33" rx="2.5" fill="#fff" stroke="#7d8b98" transform="rotate(-8 19 26)"/>
+  <rect x="17" y="6" width="24" height="33" rx="2.5" fill="#fff" stroke="#7d8b98" transform="rotate(7 29 22)"/>
+  <path d="M29 16c3-4 8 0 5 4l-5 5-5-5c-3-4 2-8 5-4z" fill="#cf3b31"/>
+  <path d="M11 20l4 7-4 7-4-7z" fill="#cf3b31"/>
+</symbol>
+
+<symbol id="i-recycle" viewBox="0 0 48 48">
+  <path d="M12 15h24l-3 29H15z" fill="#cfe8f7" stroke="#5b8cad" stroke-width="1.5"/>
+  <path d="M10 11h28v5H10z" fill="#9dc9e4" stroke="#5b8cad" stroke-width="1.5"/>
+  <path d="M19 8h10v4H19z" fill="#7fb3d3" stroke="#5b8cad" stroke-width="1.5"/>
+  <path d="M20 21l4 0-3 6h5l-7 11 2-8h-4z" fill="#3f8f4a"/>
+  <path d="M20 21l4 0-3 6h5l-7 11 2-8h-4z" fill="#3f8f4a" transform="rotate(120 24 27)"/>
+  <path d="M20 21l4 0-3 6h5l-7 11 2-8h-4z" fill="#3f8f4a" transform="rotate(240 24 27)"/>
+</symbol>
+
+<symbol id="i-control" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="9" fill="#dbe9f3" stroke="#3c7fae" stroke-width="2"/>
+  <g fill="#5b9cc8" stroke="#2c6188" stroke-width="1">
+    <rect x="21" y="2" width="6" height="8" rx="1"/><rect x="21" y="38" width="6" height="8" rx="1"/>
+    <rect x="2" y="21" width="8" height="6" rx="1"/><rect x="38" y="21" width="8" height="6" rx="1"/>
+    <rect x="21" y="2" width="6" height="8" rx="1" transform="rotate(45 24 24)"/>
+    <rect x="21" y="38" width="6" height="8" rx="1" transform="rotate(45 24 24)"/>
+    <rect x="2" y="21" width="8" height="6" rx="1" transform="rotate(45 24 24)"/>
+    <rect x="38" y="21" width="8" height="6" rx="1" transform="rotate(45 24 24)"/>
+  </g>
+  <circle cx="24" cy="24" r="4" fill="#2c6188"/>
+</symbol>
+
+<symbol id="i-search" viewBox="0 0 48 48">
+  <circle cx="20" cy="20" r="12" fill="#dff2ff" stroke="#2f6f9f" stroke-width="3"/>
+  <path d="M29 29l12 12" stroke="#2f6f9f" stroke-width="5" stroke-linecap="round"/>
+  <path d="M14 16c2-3 5-4 8-4" fill="none" stroke="#fff" stroke-width="2.5" opacity=".9"/>
+</symbol>
+
+<symbol id="i-help" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="20" fill="url(#g-blue)" stroke="#0f4d7a"/>
+  <text x="24" y="33" text-anchor="middle" font-family="Segoe UI,Arial" font-size="27" font-weight="bold" fill="#fff">?</text>
+</symbol>
+
+<symbol id="i-run" viewBox="0 0 48 48">
+  <rect x="4" y="9" width="34" height="26" rx="2" fill="#f2f6f9" stroke="#77848f"/>
+  <path d="M4 13h34v5H4z" fill="#4d94c9"/>
+  <path d="M9 24l5 4-5 4" fill="none" stroke="#46535e" stroke-width="2"/>
+  <path d="M20 22l22 11-9 2-2 9z" fill="#54a52c" stroke="#2f6d14"/>
+</symbol>
+
+<symbol id="i-shutdown" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="19" fill="url(#g-red)" stroke="#6e0e0a"/>
+  <path d="M24 12v13" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <path d="M16 17a12 12 0 1 0 16 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+</symbol>
+
+<symbol id="i-lock" viewBox="0 0 48 48">
+  <path d="M15 21v-7a9 9 0 0 1 18 0v7" fill="none" stroke="#7d8b98" stroke-width="4"/>
+  <rect x="10" y="20" width="28" height="22" rx="3" fill="url(#g-gold)" stroke="#a97c0b"/>
+  <circle cx="24" cy="29" r="3.5" fill="#6b4e07"/>
+  <path d="M24 31v5" stroke="#6b4e07" stroke-width="3"/>
+</symbol>
+
+<symbol id="i-user" viewBox="0 0 48 48">
+  <circle cx="24" cy="16" r="9" fill="#cfe8f7" stroke="#3c7fae" stroke-width="2"/>
+  <path d="M8 42c0-9 7-14 16-14s16 5 16 14z" fill="#cfe8f7" stroke="#3c7fae" stroke-width="2"/>
+</symbol>
+
+<symbol id="i-network" viewBox="0 0 48 48">
+  <rect x="4" y="8" width="40" height="26" rx="2" fill="url(#g-silver)" stroke="#5a6672"/>
+  <rect x="7" y="11" width="34" height="20" fill="url(#g-screen)" stroke="#0c3656"/>
+  <path d="M18 34h12l2 6H16z" fill="#8e9aa6" stroke="#5a6672"/>
+  <path d="M33 35c3-3 7-3 10 0M36 38c1.5-1.5 3.5-1.5 5 0" fill="none" stroke="#3ddc57" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="38.5" cy="41" r="1.5" fill="#3ddc57"/>
+</symbol>
+
+<symbol id="i-volume" viewBox="0 0 48 48">
+  <path d="M8 19h7l9-8v26l-9-8H8z" fill="#7d8b98" stroke="#46535e"/>
+  <path d="M29 17a9 9 0 0 1 0 14M33 13a15 15 0 0 1 0 22" fill="none" stroke="#4d94c9" stroke-width="3" stroke-linecap="round"/>
+</symbol>
+
+<symbol id="i-clock" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="19" fill="#f7fbfe" stroke="#5b7890" stroke-width="2"/>
+  <circle cx="24" cy="24" r="16" fill="none" stroke="#b9cfdf" stroke-width="1"/>
+  <path d="M24 24V13M24 24l8 5" stroke="#2c4b62" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="24" cy="24" r="2" fill="#cf3b31"/>
+</symbol>
+
+<symbol id="i-weather" viewBox="0 0 48 48">
+  <circle cx="18" cy="17" r="9" fill="url(#g-gold)" stroke="#c58f0a"/>
+  <g stroke="#e5a80d" stroke-width="2" stroke-linecap="round"><path d="M18 3v4M18 27v4M4 17h4M28 17h4M8 7l3 3M25 24l3 3M28 7l-3 3M11 24l-3 3"/></g>
+  <path d="M15 36c-4 0-6-3-6-6s3-6 6-6c1-5 5-8 10-8 6 0 10 4 10 10 3 0 6 2 6 5s-3 5-6 5z" fill="#eaf6ff" stroke="#8ba7bb" stroke-width="1.5"/>
+</symbol>
+
+<symbol id="i-sticky" viewBox="0 0 48 48">
+  <path d="M7 5h34v27l-11 11H7z" fill="#fff19a" stroke="#c9a81c"/>
+  <path d="M41 32L30 43V32z" fill="#e8d45a" stroke="#c9a81c"/>
+  <path d="M13 14h22M13 20h22M13 26h16" stroke="#b89a1a" stroke-width="1.8"/>
+</symbol>
+
+<symbol id="i-taskmgr" viewBox="0 0 48 48">
+  <rect x="4" y="6" width="40" height="36" rx="2" fill="#f2f6f9" stroke="#77848f"/>
+  <path d="M4 10h40v4H4z" fill="#4d94c9"/>
+  <rect x="9" y="26" width="5" height="10" fill="#54a52c"/>
+  <rect x="17" y="19" width="5" height="17" fill="#4d94c9"/>
+  <rect x="25" y="23" width="5" height="13" fill="#f2a53d"/>
+  <rect x="33" y="15" width="5" height="21" fill="#cf3b31"/>
+  <path d="M9 14h20" stroke="#77848f" stroke-width="1.5"/>
+</symbol>
+
+<symbol id="i-snake" viewBox="0 0 48 48">
+  <rect x="4" y="4" width="40" height="40" rx="3" fill="#2b3a2b" stroke="#101810"/>
+  <path d="M10 12h9v9h9v9h9v9" fill="none" stroke="#6cbf4a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="15" cy="17" r="3" fill="#1b2a1b"/>
+  <rect x="35" y="33" width="7" height="7" fill="#e05a4f"/>
+</symbol>
+
+<symbol id="i-wallpaper" viewBox="0 0 48 48">
+  <rect x="5" y="7" width="38" height="28" rx="2" fill="url(#g-silver)" stroke="#5a6672"/>
+  <rect x="8" y="10" width="32" height="22" fill="url(#g-screen)"/>
+  <path d="M8 32c6-9 11-3 16-9s10 3 16-2v11H8z" fill="#0b3f70" opacity=".55"/>
+  <circle cx="33" cy="15" r="3" fill="#ffe08a"/>
+  <path d="M19 35h10l2 6H17z" fill="#8e9aa6" stroke="#5a6672"/>
+</symbol>
+
+<symbol id="i-shield" viewBox="0 0 48 48">
+  <path d="M24 3l17 6v14c0 12-8 19-17 22C15 42 7 35 7 23V9z" fill="url(#g-blue)" stroke="#0f4d7a"/>
+  <path d="M16 23l6 6 11-12" fill="none" stroke="#eafcff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+
+<symbol id="i-star" viewBox="0 0 48 48">
+  <path d="M24 4l6 13 14 2-10 10 2 14-12-7-12 7 2-14L4 19l14-2z" fill="url(#g-gold)" stroke="#a97c0b"/>
+</symbol>
+
+<symbol id="i-back" viewBox="0 0 48 48"><path d="M30 10L16 24l14 14" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-forward" viewBox="0 0 48 48"><path d="M18 10l14 14-14 14" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-up" viewBox="0 0 48 48"><path d="M24 36V12M11 24l13-13 13 13" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+
+<symbol id="i-info" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#3d8fd0"/><circle cx="24" cy="14" r="2.5" fill="#fff"/><path d="M24 21v15" stroke="#fff" stroke-width="5" stroke-linecap="round"/></symbol>
+<symbol id="i-warning" viewBox="0 0 48 48"><path d="M24 4L45 42H3z" fill="#f2c53d" stroke="#a97c0b"/><path d="M24 16v13" stroke="#5b4300" stroke-width="4" stroke-linecap="round"/><circle cx="24" cy="35" r="2.5" fill="#5b4300"/></symbol>
+<symbol id="i-error" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#cf3b31"/><path d="M16 16l16 16M32 16L16 32" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></symbol>
+<symbol id="i-question" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#3d8fd0"/><text x="24" y="34" text-anchor="middle" font-family="Segoe UI,Arial" font-size="28" font-weight="bold" fill="#fff">?</text></symbol>
+<symbol id="i-check" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#54a52c"/><path d="M14 24l7 7 14-15" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-power" viewBox="0 0 48 48"><path d="M24 7v16" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M13 13a16 16 0 1 0 22 0" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- scripts -->
+<script src="js/core.js"></script>
+<script src="js/apps.js"></script>
+<script src="js/system.js"></script>
+<script src="js/games.js"></script>
+<script src="js/media.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

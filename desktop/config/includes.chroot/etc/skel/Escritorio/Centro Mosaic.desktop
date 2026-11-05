@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Centro Mosaic
+Comment=Herramientas y mantenimiento de MosaicOS
+Exec=/usr/local/bin/mosaic-center
+Icon=preferences-system
+Terminal=false
+Categories=System;Settings;

@@ -1,0 +1,6 @@
+ProductName=MosaicOS
+ProductBranch=MosaicOS NT
+ProductVersion=0.36-dev
+DistributionId=MOSAICOS
+Tagline=Un sistema abierto, modular y adaptable.
+Status=Experimental fork bootstrap; not a bootable MosaicOS release.

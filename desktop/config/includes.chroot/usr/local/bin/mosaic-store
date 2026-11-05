@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""Mosaic Store: small, explicit APT front-end for the curated app catalog."""
+import csv, os, re, shutil, subprocess, sys
+from pathlib import Path
+
+CATALOG = Path(os.environ.get('MOSAIC_STORE_CATALOG', '/usr/share/mosaicos/apps/apps.csv'))
+if not CATALOG.exists():
+    CATALOG = Path(__file__).resolve().parents[4] / 'apps/catalog/apps.csv'
+ARCH = subprocess.run(['dpkg', '--print-architecture'], text=True, capture_output=True).stdout.strip() or 'unknown'
+
+def load():
+    with CATALOG.open(newline='', encoding='utf-8') as f:
+        return [r for r in csv.DictReader(f) if ARCH in r['architectures'].split('|')]
+
+def print_apps(rows):
+    print(f"\nMosaic Store — catálogo para {ARCH}\n")
+    print(f"{'ID':14} {'PROGRAMA':18} {'CATEGORÍA':14} {'RAM':9} DESCRIPCIÓN")
+    print('-' * 100)
+    for r in rows:
+        print(f"{r['id']:14} {r['name'][:18]:18} {r['category'][:14]:14} {r['weight']:9} {r['description']}")
+    print('\nInstalar: mosaic-store install ID | Buscar: mosaic-store search TEXTO')
+
+def main():
+    rows = load()
+    if not rows:
+        raise SystemExit('No se pudo cargar el catálogo de aplicaciones.')
+    args = sys.argv[1:]
+    if not args or args[0] == 'list':
+        print_apps(rows); return
+    if args[0] == 'search' and len(args) > 1:
+        q = ' '.join(args[1:]).casefold()
+        found = [r for r in rows if q in ' '.join(r.values()).casefold()]
+        print_apps(found); return
+    if args[0] == 'info' and len(args) == 2:
+        found = next((r for r in rows if r['id'] == args[1]), None)
+        if not found: raise SystemExit('Aplicación no disponible para esta arquitectura.')
+        for k, v in found.items(): print(f'{k}: {v}')
+        return
+    if args[0] != 'install' or len(args) != 2:
+        raise SystemExit('Uso: mosaic-store [list | search TEXTO | info ID | install ID]')
+    app = next((r for r in rows if r['id'] == args[1]), None)
+    if not app: raise SystemExit('ID desconocido o aplicación no disponible para esta arquitectura.')
+    package = app['package']
+    if not re.fullmatch(r'[a-z0-9][a-z0-9+.-]+', package):
+        raise SystemExit('Nombre de paquete inválido en el catálogo.')
+    if os.geteuid() == 0:
+        raise SystemExit('No ejecutes Mosaic Store como root; vuelve a abrirlo desde tu sesión.')
+    if not shutil.which('apt-get'):
+        raise SystemExit('APT no está disponible en este sistema.')
+    print(f"Programa: {app['name']}\nPaquete: {package}\nPerfil de memoria: {app['weight']}")
+    print('La instalación usará los repositorios APT configurados y no instalará recomendaciones.')
+    if input('¿Confirmas la instalación? [s/N] ').strip().lower() not in ('s', 'si', 'sí', 'y', 'yes'):
+        print('Instalación cancelada.'); return
+    cmd = ['apt-get', 'install', '--no-install-recommends', package]
+    if shutil.which('pkexec'):
+        cmd = ['pkexec'] + cmd
+    elif shutil.which('sudo'):
+        cmd = ['sudo'] + cmd
+    else:
+        raise SystemExit('No hay un mecanismo de autorización gráfica/administrativa disponible.')
+    raise SystemExit(subprocess.run(cmd).returncode)
+
+if __name__ == '__main__':
+    main()

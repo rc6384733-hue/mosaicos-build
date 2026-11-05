@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Bienvenido a MosaicOS (texto)
+Comment=Información y diagnóstico básico del sistema
+Exec=qterminal -e /usr/local/bin/mosaic-welcome
+Icon=computer
+Terminal=false
+NoDisplay=true
+Categories=System;Utility;

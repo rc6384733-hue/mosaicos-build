@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Aplicaciones Windows
+Comment=Abrir programas .exe de 32 bits con Wine32
+Exec=/usr/local/bin/mosaic-windows
+Icon=wine
+Terminal=false
+Categories=System;Utility;
+Keywords=wine;windows;exe;compatibilidad;

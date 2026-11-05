@@ -1,0 +1,23 @@
+MosaicOS 0.47 — informe de construcción
+
+Cambios implementados:
+- perfiles de paquetes amd64/Trixie e i386/Bookworm separados;
+- workspace de live-build independiente por arquitectura;
+- salidas ISO con nombre versionado en desktop/dist y checksum SHA-256;
+- metadatos y mensajes de bienvenida actualizados;
+- pruebas estáticas de perfiles, scripts y recursos.
+
+Validaciones ejecutadas en este entorno:
+- tests/validate_047.sh: OK tras corregir la comprobación documental;
+- sh -n sobre todos los scripts shell: OK;
+- integridad del ZIP: se verificará al empaquetar.
+
+Limitaciones del entorno:
+- no están disponibles live-build, debootstrap, xorriso, mksquashfs ni QEMU;
+- no se pudo compilar una ISO;
+- no se realizó arranque virtual ni prueba en hardware;
+- no hay mediciones de RAM/CPU.
+
+Conclusión: 0.47 mejora la reproducibilidad y evita que una compilación limpie el workspace de la otra arquitectura. No es todavía una imagen instalable.
+- revisión documental inicial de proyectos abiertos añadida en docs/OPEN_SOURCE_RESEARCH_047.md;
+- no se importó código de terceros en 0.47.

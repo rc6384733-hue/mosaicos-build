@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=MosaicOS Startup Sound
+Comment=Reproduce el sonido de inicio
+Exec=/usr/local/bin/mosaic-startup-sound
+Terminal=false
+NoDisplay=true
+OnlyShowIn=LXQt;
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Phase=Applications

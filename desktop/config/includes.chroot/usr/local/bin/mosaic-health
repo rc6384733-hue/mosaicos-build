@@ -1,0 +1,59 @@
+#!/bin/sh
+# Read-only health check for MosaicOS Desktop. Does not modify the system.
+set -u
+ok=0; warn=0; fail=0
+pass() { printf '  [OK]   %s\n' "$1"; ok=$((ok+1)); }
+note() { printf '  [INFO] %s\n' "$1"; }
+warning() { printf '  [AVISO] %s\n' "$1"; warn=$((warn+1)); }
+problem() { printf '  [ERROR] %s\n' "$1"; fail=$((fail+1)); }
+section() { printf '\n%s\n' "$1"; }
+printf '\nMOSAICOS 0.50 AERO — COMPROBACIÓN DEL SISTEMA (i386)\n'
+printf '========================================\n'
+section 'IDENTIDAD'
+if [ -r /etc/mosaic-release ]; then pass 'Archivo de versión encontrado'; else warning 'No se encontró /etc/mosaic-release'; fi
+if command -v dpkg >/dev/null 2>&1; then pass 'Gestor de paquetes dpkg disponible'; else problem 'No se encontró dpkg'; fi
+section 'ALMACENAMIENTO'
+if command -v df >/dev/null 2>&1; then
+  root_line=$(df -P / 2>/dev/null | awk 'NR==2 {print $5}')
+  if [ -n "$root_line" ]; then
+    used=${root_line%%%}
+    case "$used" in *[!0-9]*|'') warning 'No se pudo interpretar el uso del disco' ;; *)
+      if [ "$used" -ge 95 ]; then problem "Partición raíz casi llena ($root_line usado)";
+      elif [ "$used" -ge 85 ]; then warning "Espacio de disco reducido ($root_line usado)";
+      else pass "Espacio en raíz dentro de límites ($root_line usado)"; fi;;
+    esac
+  else warning 'No se pudo consultar la partición raíz'; fi
+else problem 'No está disponible df'; fi
+section 'MEMORIA'
+if [ -r /proc/meminfo ]; then
+  mem=$(awk '/MemAvailable:/ {print $2}' /proc/meminfo)
+  if [ -n "$mem" ]; then
+    if [ "$mem" -lt 131072 ]; then warning 'Menos de 128 MiB de memoria disponible'; else pass 'Memoria disponible detectada'; fi
+  else warning 'MemAvailable no está disponible'; fi
+else warning 'No se pudo leer /proc/meminfo'; fi
+section 'RED'
+if command -v ip >/dev/null 2>&1; then
+  if ip route 2>/dev/null | grep -q '^default '; then pass 'Ruta de red predeterminada configurada'; else warning 'No hay ruta predeterminada; revisa la conexión'; fi
+else note 'Herramienta ip no instalada; se omite la comprobación de rutas'; fi
+if command -v nmcli >/dev/null 2>&1; then
+  nm_state=$(nmcli -t -f STATE general 2>/dev/null || true)
+  case "$nm_state" in connected*) pass 'NetworkManager informa conexión' ;; *) warning 'NetworkManager no informa conexión activa' ;; esac
+fi
+section 'SERVICIOS Y HERRAMIENTAS'
+for app in firefox-esr thunderbird libreoffice vlc wine qterminal; do
+  if command -v "$app" >/dev/null 2>&1; then pass "$app instalado"; else note "$app no detectado"; fi
+done
+if command -v wine >/dev/null 2>&1; then
+  case "$(wine --version 2>/dev/null || true)" in
+    *64*) note 'Wine informa soporte de 64 bits; en i386 solo se usan aplicaciones Win32' ;;
+    *) pass 'Wine32 disponible para aplicaciones Windows de 32 bits' ;;
+  esac
+fi
+if [ "$(dpkg --print-architecture 2>/dev/null || echo desconocida)" = i386 ]; then
+  pass 'Arquitectura i386 confirmada (32 bits)'
+else
+  warning 'La arquitectura no es i386'
+fi
+printf '\nRESUMEN: %s correctas, %s avisos, %s errores\n' "$ok" "$warn" "$fail"
+printf 'Esta comprobación es informativa y no cambia archivos ni configuraciones.\n\n'
+[ "$fail" -eq 0 ]

@@ -1,0 +1,15 @@
+ MosaicOS 0.50 Aero — edición i386 (32 bits)
+
+ Bienvenido. Este sistema incluye escritorio LXQt, aplicaciones Linux
+ nativas y Wine32 para programas Windows de 32 bits.
+
+ Instalar en el disco: menú de arranque > Instalar, o el icono
+ «Instalar MosaicOS» del escritorio.
+
+ Persistencia en USB: añade «persistence» a las opciones de arranque y
+ crea una partición etiquetada «persistence» con un archivo persistence.conf.
+
+ La compatibilidad con programas Windows no es universal. Las aplicaciones
+ Windows de 64 bits no se ejecutan en un sistema de 32 bits.
+
+ Consola: usuario «mosaic», sudo sin contraseña en la sesión live.

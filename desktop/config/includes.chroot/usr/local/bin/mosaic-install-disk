@@ -1,0 +1,15 @@
+#!/bin/sh
+# Lanza el instalador Debian incluido en la ISO live.
+set -eu
+if ! command -v debian-installer-launcher >/dev/null 2>&1; then
+  if command -v yad >/dev/null 2>&1; then
+    yad --error --title='Instalar MosaicOS' --text='El instalador no está disponible en esta ISO.\n\nArranca de nuevo y elige «Instalar» en el menú de arranque.' 2>/dev/null || true
+  else
+    printf 'El instalador no está disponible. Usa la entrada «Instalar» del menú de arranque.\n' >&2
+  fi
+  exit 1
+fi
+if command -v pkexec >/dev/null 2>&1; then
+  exec pkexec debian-installer-launcher
+fi
+exec debian-installer-launcher

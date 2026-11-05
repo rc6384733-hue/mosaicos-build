@@ -1,0 +1,21 @@
+MosaicOS Daily 0.43 — informe de validación del paquete
+=======================================================
+
+Validaciones ejecutadas en el entorno de desarrollo:
+- tests/validate_042.py: OK
+- tests/validate_desktop.py: OK
+- tests/test_compatibility.py: 5/5 pruebas OK
+- py_compile del inspector PE y del validador: OK
+- sh -n sobre scripts Mosaic y desktop/build.sh: OK
+- Parseo XML de configuración Openbox: OK
+- Validación estructural de lanzadores .desktop: OK
+- unzip -t del paquete de entrada 0.41: OK
+
+Limitaciones:
+- live-build no está instalado en este entorno.
+- xorriso y debootstrap no están instalados.
+- QEMU no está disponible.
+- No se generó ISO ni se probó arranque virtual o físico.
+- No hay instalador de disco validado.
+
+Conclusión: paquete fuente 0.43 validado estructuralmente. No es una ISO instalable ni una versión apta para reemplazar un sistema operativo existente.

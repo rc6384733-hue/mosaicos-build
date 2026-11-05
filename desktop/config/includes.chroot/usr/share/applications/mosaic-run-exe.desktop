@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Abrir con Wine32
+Comment=Ejecutar un programa Windows de 32 bits
+Exec=/usr/local/bin/mosaic-run-exe %f
+Icon=wine
+Terminal=false
+NoDisplay=true
+MimeType=application/x-ms-dos-executable;application/x-msdownload;application/x-msi;application/x-ms-shortcut;
+Categories=System;Utility;

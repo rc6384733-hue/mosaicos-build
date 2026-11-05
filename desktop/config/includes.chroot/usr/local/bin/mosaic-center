@@ -1,0 +1,41 @@
+#!/bin/sh
+# MosaicOS graphical hub. Actions are explicit; updates require confirmation.
+set -eu
+if ! command -v yad >/dev/null 2>&1; then
+  echo 'Mosaic Center necesita yad. Usa mosaic-welcome, mosaic-health, mosaic-report o mosaic-update.' >&2
+  exit 1
+fi
+while :; do
+  choice=$(yad --list --title='Centro Mosaic' --width=620 --height=390 \
+    --text='MosaicOS Daily · herramientas del sistema' \
+    --column='Acción' --column='Descripción' --print-column=1 \
+    'Bienvenida' 'Información general del sistema' \
+    'Configuración' 'Pantalla, red, sonido y apariencia' \
+    'Aplicaciones' 'Buscar e instalar programas Linux' \
+    'Aplicaciones Windows' 'Ejecutar programas .exe de 32 bits con Wine32' \
+    'Instalar MosaicOS' 'Instalar el sistema en el disco' \
+    'Diagnóstico' 'Comprobaciones de solo lectura' \
+    'Crear informe' 'Guardar un informe local protegido' \
+    'Copia de seguridad' 'Crear o revisar una copia de tus archivos personales' \
+    'Información del equipo' 'Consultar CPU, memoria, discos y dispositivos' \
+    'Actualizaciones' 'Buscar e instalar actualizaciones con autorización' \
+    'Cerrar' 'Salir del Centro Mosaic' 2>/dev/null) || exit 0
+  case "$choice" in
+    Bienvenida) mosaic-welcome | yad --text-info --title='Bienvenido a MosaicOS' --width=620 --height=420 ;;
+    Configuración) mosaic-settings ;;
+    Aplicaciones) mosaic-apps ;;
+    'Aplicaciones Windows') mosaic-windows ;;
+    'Instalar MosaicOS') mosaic-install-disk ;;
+    Diagnóstico) mosaic-health > "${TMPDIR:-/tmp}/mosaic-health.$$.txt" || true
+      yad --text-info --title='Diagnóstico Mosaic' --filename="${TMPDIR:-/tmp}/mosaic-health.$$.txt" --width=680 --height=480
+      rm -f "${TMPDIR:-/tmp}/mosaic-health.$$.txt" ;;
+    'Crear informe')
+      out=$(yad --file-selection --save --confirm-overwrite --filename="$HOME/mosaicos-informe.txt" --title='Guardar informe Mosaic') || continue
+      mosaic-report "$out"
+      yad --info --title='Informe creado' --text="Informe guardado en:\n$out" ;;
+    'Copia de seguridad') mosaic-backup ;;
+    'Información del equipo') qterminal -e mosaic-hardware ;;
+    Actualizaciones) qterminal -e mosaic-update ;;
+    Cerrar) exit 0 ;;
+  esac
+done

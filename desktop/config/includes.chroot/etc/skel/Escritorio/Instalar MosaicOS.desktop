@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Instalar MosaicOS
+Comment=Instalar el sistema en el disco duro
+Exec=/usr/local/bin/mosaic-install-disk
+Icon=system-software-install
+Terminal=false
+Categories=System;

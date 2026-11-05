@@ -1,0 +1,7 @@
+MosaicOS 0.45 — informe de entrega
+Tipo: paquete fuente; no es ISO ni instalador.
+Conservado: árbol unificado 0.44 y avances históricos.
+Añadido: inventario de compatibilidad de solo lectura y documentación de integración selectiva.
+Validación: sintaxis POSIX sh; prueba de ayuda y ejecución en el entorno disponible.
+No ejecutado: compilación ISO, QEMU, pruebas físicas, mediciones de memoria, ni pruebas de aplicaciones Windows.
+Base definitiva: pendiente. 32-bit y 64-bit requieren validación independiente de repositorios, navegadores, controladores y actualizaciones.

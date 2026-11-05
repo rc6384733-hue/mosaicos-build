@@ -1,0 +1,108 @@
+MosaicOS 0.50 Aero (i386) — informe de construcción y validación
+================================================================
+
+Fecha: 2026-11-04
+Entorno: Windows, sin WSL, sin Docker y sin Python del sistema.
+Python 3.12.10 embebible temporal usado solo para las validaciones estáticas.
+No se dispone de host Debian en este equipo.
+
+RESULTADO GENERAL
+-----------------
+Receta completa: SÍ.
+ISO compilada: NO.
+Arranque probado: NO.
+Instalación probada: NO.
+
+QUÉ SE HA VALIDADO REALMENTE
+----------------------------
+[OK] tests/validate_050.py
+     - VERSION = 0.50
+     - build.sh exclusivo i386, bookworm, syslinux/isolinux, instalador live, SHA-256
+     - sin wine64 ni referencias al escritorio web
+     - perfil de paquetes obligatorio y prohibido
+     - fondos PNG, iconos 16–256 px, tema Openbox y 12 máscaras XBM
+     - panel LXQt, tema MosaicAero, rc.xml y atajos
+     - 12 entradas .desktop del sistema y 6 accesos en el Escritorio español
+     - 6 entradas de autostart
+     - 12 herramientas Mosaic con shebang /bin/sh
+     - Wine32, modo Windows 7 y rechazo de PE32+
+     - asociación MIME de .exe y acción de PCManFM-Qt
+     - startup.wav, hook de chroot, picom, LightDM y teclado español
+     - Dockerfile, scripts de Docker, workflow de GitHub Actions y validador
+
+[OK] mosaic-store
+     - compilación de sintaxis Python correcta
+
+[OK] Catálogo CSV
+     - 17 entradas, todas con arquitectura y paquete
+     - Firefox ESR habilitado para amd64 e i386
+
+[OK] Disponibilidad de paquetes
+     - 227/227 paquetes del perfil i386 encontrados en
+       https://packages.debian.org/bookworm/i386/
+     - no se detectaron paquetes inexistentes ni duplicados
+
+[OK] Recursos generados
+     - mosaic-7.png: 1920x1080, 520.261 bytes
+     - mosaic-7-login.png: 1920x1080, 381.146 bytes
+     - iconos start-here/distributor-logo: 16, 22, 24, 32, 48, 64, 128, 256 px
+     - startup.wav: 2,60 s, 44.100 Hz, estéreo, 16 bits, 458.684 bytes
+     - 104 archivos en includes.chroot (sin cachés .pyc)
+     - 12 entradas .desktop de sistema, 6 accesos directos, 6 autostart
+
+QUÉ NO SE HA PODIDO EJECUTAR AQUÍ
+---------------------------------
+[PENDIENTE] live-build / debootstrap / lb build
+[PENDIENTE] generación real de la ISO y su SHA-256
+[PENDIENTE] arranque en QEMU (BIOS)
+[PENDIENTE] arranque en hardware real de 32 bits
+[PENDIENTE] sesión LXQt/Openbox, panel, tema, red, audio y apagado
+[PENDIENTE] instalador Debian live y arranque del sistema instalado
+[PENDIENTE] ejecución de aplicaciones Windows de 32 bits concretas
+[PENDIENTE] medición de RAM/CPU y persistencia USB
+
+MOTIVO
+------
+El equipo de trabajo es Windows y no tiene WSL, Docker ni un host Linux.
+La compilación de una ISO Debian requiere live-build, debootstrap y
+herramientas Unix que no están disponibles aquí. No se ha simulado ni
+falsificado una compilación.
+
+CÓMO COMPLETAR LA CONSTRUCCIÓN
+------------------------------
+1. Debian 12/13:
+     cd desktop
+     sudo sh ./prepare-build-host.sh
+     sudo sh ./build.sh i386
+
+2. Docker (Windows/macOS/Linux):
+     powershell -ExecutionPolicy Bypass -File .\desktop\docker\build-with-docker.ps1
+     sh ./desktop/docker/build-with-docker.sh
+
+3. GitHub Actions:
+     Ejecutar el workflow «Build MosaicOS ISO (i386)».
+
+Salida esperada:
+     desktop/dist/MosaicOS-0.50-i386.iso
+     desktop/dist/MosaicOS-0.50-i386.iso.sha256
+     desktop/build/i386/build.log
+
+PRUEBA MÍNIMA RECOMENDADA
+-------------------------
+     qemu-system-i386 -m 2048 -cdrom desktop/dist/MosaicOS-0.50-i386.iso -boot d
+
+Comprobar: escritorio, panel, menú, red, audio, terminal, Firefox,
+LibreOffice, un .exe de 32 bits, apagado y reinicio. Después probar el
+instalador con un disco virtual vacío.
+
+LIMITACIONES QUE NO CAMBIAN CON LA COMPILACIÓN
+----------------------------------------------
+- Solo aplicaciones Windows de 32 bits; PE32+ se rechaza.
+- Solo arranque BIOS (syslinux/isolinux); sin UEFI de 32 bits.
+- La compatibilidad con Wine depende de cada aplicación.
+- El instalador Debian no replica automáticamente todo el escritorio Mosaic.
+- El rendimiento en 1 GB de RAM no está medido.
+
+Conclusión: la receta de MosaicOS 0.50 está completa y validada
+estáticamente. La ISO debe compilarse y probarse en un entorno Linux o
+Docker; este informe no afirma que la imagen ya exista o arranque.

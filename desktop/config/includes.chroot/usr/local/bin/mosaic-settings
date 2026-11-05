@@ -1,0 +1,38 @@
+#!/bin/sh
+# Safe graphical settings hub: only launches known system configuration tools.
+set -eu
+if [ "$(id -u)" -eq 0 ]; then
+  yad --error --title='Configuración Mosaic' --text='Abre esta herramienta desde tu sesión normal, no como administrador.' 2>/dev/null || echo 'No ejecutes este centro como root.' >&2
+  exit 1
+fi
+if ! command -v yad >/dev/null 2>&1; then
+  echo 'Esta herramienta necesita yad.' >&2
+  exit 1
+fi
+while :; do
+  choice=$(yad --list --title='Configuración Mosaic' --width=680 --height=430 \
+    --text='Configura tu espacio de trabajo. Los cambios se realizan en las herramientas del sistema.' \
+    --column='Área' --column='Qué puedes configurar' --print-column=1 \
+    'Apariencia' 'Tema, iconos y fuentes' \
+    'Pantalla' 'Resolución y monitores' \
+    'Red' 'Wi-Fi, Ethernet y conexiones' \
+    'Sonido' 'Volumen y dispositivos de audio' \
+    'Bluetooth' 'Dispositivos Bluetooth' \
+    'Teclado y mouse' 'Distribución y dispositivos de entrada' \
+    'Sistema' 'Paneles, sesión y preferencias LXQt' \
+    'Aplicaciones Windows' 'Wine32 y programas .exe de 32 bits' \
+    'Instalar en disco' 'Asistente de instalación de MosaicOS' \
+    'Volver' 'Cerrar configuración' 2>/dev/null) || exit 0
+  case "$choice" in
+    Apariencia) lxqt-config-appearance ;;
+    Pantalla) lxqt-config-monitor ;;
+    Red) if command -v nm-connection-editor >/dev/null 2>&1; then nm-connection-editor; else yad --warning --text='No está disponible el editor de conexiones.'; fi ;;
+    Sonido) pavucontrol ;;
+    Bluetooth) blueman-manager ;;
+    'Teclado y mouse') lxqt-config-input ;;
+    Sistema) lxqt-config ;;
+    'Aplicaciones Windows') mosaic-windows ;;
+    'Instalar en disco') mosaic-install-disk ;;
+    Volver|'') exit 0 ;;
+  esac
+done

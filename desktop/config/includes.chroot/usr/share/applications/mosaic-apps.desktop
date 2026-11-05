@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Mosaic Store
+Comment=Explora e instala aplicaciones para tu equipo
+Exec=mosaic-apps
+Icon=system-software-install
+Terminal=false
+Categories=System;PackageManager;

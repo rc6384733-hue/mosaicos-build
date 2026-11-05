@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Bienvenido a MosaicOS
+Comment=Guía de inicio y tareas habituales
+Exec=/usr/local/bin/mosaic-welcome-gui
+Icon=computer
+Terminal=false
+Categories=System;Utility;

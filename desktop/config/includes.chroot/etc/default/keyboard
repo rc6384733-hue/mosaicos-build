@@ -1,0 +1,6 @@
+# MosaicOS 0.50 — teclado español
+XKBMODEL="pc105"
+XKBLAYOUT="es"
+XKBVARIANT=""
+XKBOPTIONS=""
+BACKSPACE="guess"

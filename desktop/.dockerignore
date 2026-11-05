@@ -1,0 +1,6 @@
+build/
+dist/
+win7/
+*.iso
+*.pyc
+__pycache__/

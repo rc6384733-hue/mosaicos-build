@@ -1,0 +1,5 @@
+MosaicOS 0.50 Aero
+Base: Debian GNU/Linux 12 (bookworm)
+Arquitectura: i386 (32 bits)
+Escritorio: LXQt + Openbox con tema Aero
+Compatibilidad: aplicaciones Linux nativas + Wine32 (programas Windows de 32 bits)
