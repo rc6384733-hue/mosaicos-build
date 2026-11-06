@@ -113,6 +113,25 @@ jobs:
           fi
           sudo apt-get update -qq
           sudo apt-get install -y -qq qemu-system-x86 socat
+          cat > /tmp/screen_ratio.py <<'PY'
+          import sys
+          from pathlib import Path
+
+          p = Path(sys.argv[1])
+          if not p.is_file():
+              print('0')
+              raise SystemExit(0)
+          data = p.read_bytes()
+          parts = data.split(b'\n', 3)
+          if len(parts) < 4 or not data.startswith(b'P6'):
+              print('0')
+              raise SystemExit(0)
+          pixels = parts[3]
+          total = len(pixels) // 3
+          lit = sum(1 for i in range(0, len(pixels) - 2, 3)
+                    if pixels[i] + pixels[i + 1] + pixels[i + 2] > 30)
+          print(f'{(100.0 * lit / total) if total else 0:.2f}')
+          PY
           rm -f /tmp/serial.log /tmp/screen.ppm /tmp/qemu-mon
           qemu-system-i386 -m 3072 -cdrom "$ISO" -boot d \
             -display none -vga std \
@@ -127,41 +146,36 @@ jobs:
               break
             fi
           done
-          # El sistema live arranca el escritorio con autologin (lightdm).
-          # Se le da tiempo a X/LXQt para que la captura muestre el escritorio
-          # y no la consola de texto.
-          sleep 120
-          if [ -S /tmp/qemu-mon ]; then
+          echo "== login en consola serie: $login_ok =="
+          # Bajo emulación TCG el escritorio (lightdm + LXQt) tarda varios
+          # minutos en pintar. Se toman capturas periódicas y se acepta la
+          # primera con contenido gráfico real. Un escritorio supera el 20 %;
+          # una consola de texto en negro se queda muy por debajo.
+          shot_ok=0
+          ratio=0
+          for i in $(seq 1 60); do
+            if [ ! -S /tmp/qemu-mon ]; then
+              echo 'El monitor de QEMU desapareció; se detiene la espera.'
+              break
+            fi
             printf 'screendump /tmp/screen.ppm\n' | socat - UNIX-CONNECT:/tmp/qemu-mon || true
-          fi
-          sleep 2
+            sleep 2
+            ratio=$(python3 /tmp/screen_ratio.py /tmp/screen.ppm 2>/dev/null || echo 0)
+            echo "captura $i: $ratio% de píxeles iluminados"
+            if awk -v r="$ratio" 'BEGIN { exit !(r > 20) }'; then
+              shot_ok=1
+              break
+            fi
+            sleep 10
+          done
           kill "$QPID" 2>/dev/null || true
           wait "$QPID" 2>/dev/null || true
           mkdir -p desktop/dist/qemu
           cp /tmp/serial.log /tmp/screen.ppm desktop/dist/qemu/ 2>/dev/null || true
-          echo "== login en consola serie: $login_ok =="
-          tail -60 /tmp/serial.log 2>/dev/null || true
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('/tmp/screen.ppm')
-          if not p.is_file():
-              print('No se obtuvo captura de pantalla.')
-              raise SystemExit(0)
-          data = p.read_bytes()
-          parts = data.split(b'\n', 3)
-          if len(parts) < 4 or not data.startswith(b'P6'):
-              print('Captura en formato inesperado.')
-              raise SystemExit(0)
-          pixels = parts[3]
-          total = len(pixels) // 3
-          lit = sum(1 for i in range(0, len(pixels) - 2, 3)
-                    if pixels[i] + pixels[i + 1] + pixels[i + 2] > 30)
-          ratio = lit / total if total else 0
-          print(f'Píxeles iluminados: {lit}/{total} ({ratio:.1%})')
-          if ratio < 0.01:
-              raise SystemExit('La pantalla gráfica está en negro.')
-          PY
+          echo "== escritorio gráfico: $shot_ok (última captura: $ratio%) =="
+          tail -40 /tmp/serial.log 2>/dev/null || true
           [ "$login_ok" = 1 ]
+          [ "$shot_ok" = 1 ]
 
       - name: Publicar diagnóstico de arranque
         if: always()
@@ -176,7 +190,7 @@ jobs:
           retention-days: 7
 
       - name: Publicar ISO en un Release
-        if: hashFiles('desktop/dist/*.iso') != ''
+        if: always() && hashFiles('desktop/dist/*.iso') != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
