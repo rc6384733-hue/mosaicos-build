@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=OpenCode
+Comment=Agente de programación con IA (x86_64 sobre qemu en i386)
+Exec=/usr/local/bin/mosaic-opencode
+Icon=utilities-terminal
+Terminal=false
+Categories=Development;Utility;
+Keywords=opencode;AI;agente;programación;terminal;
+StartupNotify=true

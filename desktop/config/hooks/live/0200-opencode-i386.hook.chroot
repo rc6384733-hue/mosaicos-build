@@ -1,0 +1,69 @@
+#!/bin/sh
+# MosaicOS 0.50 Aero — integra OpenCode x86_64 sobre el sistema i386.
+#
+# OpenCode no tiene binario nativo de 32 bits. Se instala el binario oficial
+# x64/musl y se ejecuta con qemu-x86_64 del paquete qemu-user (i386), de forma
+# que el emulador también es un proceso de 32 bits.
+set -eu
+
+export DEBIAN_FRONTEND=noninteractive
+export LC_ALL=C.UTF-8
+
+PREFIX=/opt/opencode
+INSTALLER=/usr/local/lib/mosaicos/opencode-install.sh
+
+echo "[mosaic-opencode] Reduciendo el peso de qemu-user"
+if [ ! -x /usr/bin/qemu-x86_64 ]; then
+  echo "[mosaic-opencode] ERROR: falta /usr/bin/qemu-x86_64 (paquete qemu-user)." >&2
+  exit 1
+fi
+for candidate in /usr/bin/qemu-*; do
+  [ -e "$candidate" ] || continue
+  case "$candidate" in
+    /usr/bin/qemu-x86_64) ;;
+    *) rm -f "$candidate" ;;
+  esac
+done
+rm -rf /usr/share/qemu /usr/share/doc/qemu-user* /usr/share/man/man1/qemu-* 2>/dev/null || true
+rm -f /usr/lib/binfmt.d/qemu-* /etc/binfmt.d/qemu-* /usr/share/binfmts/qemu-* \
+  /var/lib/binfmts/qemu-* 2>/dev/null || true
+
+echo "[mosaic-opencode] Instalando OpenCode 1.19.5"
+if [ ! -f "$INSTALLER" ]; then
+  echo "[mosaic-opencode] ERROR: no se encuentra $INSTALLER." >&2
+  exit 1
+fi
+chmod 0755 "$INSTALLER"
+sh "$INSTALLER"
+
+echo "[mosaic-opencode] Configuración y permisos"
+chmod 0755 /usr/local/bin/opencode /usr/local/bin/mosaic-opencode \
+  /usr/local/bin/mosaic-opencode-diagnose 2>/dev/null || true
+chmod 0644 /usr/share/applications/mosaic-opencode.desktop 2>/dev/null || true
+chmod 0644 /etc/opencode/opencode.json 2>/dev/null || true
+
+if [ -d /etc/skel/.config/opencode ]; then
+  chmod 0755 /etc/skel/.config/opencode
+  chmod 0644 /etc/skel/.config/opencode/opencode.json 2>/dev/null || true
+fi
+if [ -f "/etc/skel/Escritorio/OpenCode.desktop" ]; then
+  chmod 0755 "/etc/skel/Escritorio/OpenCode.desktop" 2>/dev/null || true
+fi
+
+# El usuario live puede haberse creado antes de copiar includes.chroot.
+if id mosaic >/dev/null 2>&1; then
+  install -d -o mosaic -g mosaic /home/mosaic/.config/opencode
+  install -m 0644 -o mosaic -g mosaic /etc/skel/.config/opencode/opencode.json \
+    /home/mosaic/.config/opencode/opencode.json
+  install -d -o mosaic -g mosaic /home/mosaic/Escritorio
+  install -m 0755 -o mosaic -g mosaic "/etc/skel/Escritorio/OpenCode.desktop" \
+    "/home/mosaic/Escritorio/OpenCode.desktop" 2>/dev/null || true
+  chown -R mosaic:mosaic /home/mosaic/.config/opencode 2>/dev/null || true
+  chmod 0644 /home/mosaic/.config/opencode/opencode.json 2>/dev/null || true
+fi
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+  update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
+fi
+
+echo "[mosaic-opencode] Integración completada"

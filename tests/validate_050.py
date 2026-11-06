@@ -82,6 +82,7 @@ for required in [
     "fonts-wine",
     "zram-tools",
     "earlyoom",
+    "qemu-user",
 ]:
     check(required in package_lines, f"Falta el paquete obligatorio: {required}")
 for forbidden in ["wine64", "virtualbox-guest-utils", "virtualbox-guest-x11"]:
@@ -204,6 +205,9 @@ for script in (
     "mosaic-settings",
     "mosaic-health",
     "mosaic-report",
+    "mosaic-opencode",
+    "mosaic-opencode-diagnose",
+    "opencode",
 ):
     path = bin_dir / script
     check(path.is_file(), f"Falta la herramienta {script}")
@@ -226,6 +230,59 @@ check((CHROOT / "usr" / "share" / "applications" / "mosaic-run-exe.desktop").is_
       "Falta la entrada de escritorio mosaic-run-exe para los .exe")
 check((CHROOT / "etc" / "skel" / ".local" / "share" / "file-manager" / "actions" / "wine.desktop").is_file(),
       "Falta la acción de PCManFM-Qt para Wine")
+
+# ---------------------------------------------------------------- OpenCode i386
+opencode_installer = CHROOT / "usr" / "local" / "lib" / "mosaicos" / "opencode-install.sh"
+check(opencode_installer.is_file(), "Falta el instalador de OpenCode para i386")
+if opencode_installer.is_file():
+    text = read(opencode_installer)
+    for needle in (
+        "opencode-linux-x64-baseline-musl",
+        "1.19.5",
+        "1f4c1fcc646d4d03d1ea0997a54d1e8b9fe17af6356ac54dde2c65e53fedc682",
+        "528058cf8f2a7196ec94dc113052b785f8f94f6802ced3980ad7359369ddacc8",
+        "b255cdcf4f64eb301f4dbd40d1fbdc0fcb021613b3f0d124a41eeff62e2bc7d8",
+        "af0fe894ef5051116e321bf4753a10fffa85abc2b71f30b2e949467775421ace",
+        "f348d99e10b5267566afe6f80861661b08cb5aa43a6d4d1c8f1792b5001d0995",
+        "ld-musl-x86_64.so.1",
+        "sha256sum",
+    ):
+        check(needle in text, f"El instalador de OpenCode no contiene {needle}")
+
+opencode_wrapper = bin_dir / "opencode"
+check(opencode_wrapper.is_file(), "Falta el lanzador opencode")
+if opencode_wrapper.is_file():
+    text = read(opencode_wrapper)
+    for needle in (
+        "qemu-x86_64",
+        "ld-musl-x86_64.so.1",
+        "/opt/opencode",
+        "LD_LIBRARY_PATH",
+        "GIGACAGE_ENABLED",
+        "MOSAIC_OPENCODE_SAFE",
+    ):
+        check(needle in text, f"El lanzador opencode no contiene {needle}")
+    check("exec \"$QEMU\"" in text, "El lanzador opencode no usa qemu-x86_64")
+
+opencode_hook = DESKTOP / "config" / "hooks" / "live" / "0200-opencode-i386.hook.chroot"
+check(opencode_hook.is_file(), "Falta el hook de integración de OpenCode")
+if opencode_hook.is_file():
+    text = read(opencode_hook)
+    for needle in ("qemu-x86_64", "opencode-install.sh", "chmod 0755"):
+        check(needle in text, f"El hook de OpenCode no contiene {needle}")
+
+opencode_conf = CHROOT / "etc" / "opencode" / "opencode.json"
+check(opencode_conf.is_file(), "Falta la configuración gestionada de OpenCode")
+if opencode_conf.is_file():
+    text = read(opencode_conf)
+    check('"autoupdate": false' in text, "OpenCode debe tener la autoupdate desactivada")
+
+check((CHROOT / "usr" / "share" / "applications" / "mosaic-opencode.desktop").is_file(),
+      "Falta la entrada de escritorio de OpenCode")
+check((CHROOT / "etc" / "skel" / "Escritorio" / "OpenCode.desktop").is_file(),
+      "Falta el acceso directo de OpenCode en el Escritorio")
+check((ROOT / "tests" / "opencode-i386" / "run.sh").is_file(),
+      "Falta la prueba de CI de OpenCode")
 
 # ---------------------------------------------------------------- audio y hook
 wav = CHROOT / "usr" / "share" / "sounds" / "mosaic" / "startup.wav"
@@ -269,6 +326,10 @@ check("live-build" in dockerfile and "xorriso" in dockerfile, "El contenedor no 
 workflow = read(ROOT / ".github" / "workflows" / "build-iso.yml")
 check("mosaicos-builder" in workflow and "validate_050.py" in workflow,
       "El workflow no valida ni usa el contenedor de compilación")
+check("test-opencode-i386" in workflow and "needs: test-opencode-i386" in workflow,
+      "El workflow no ejecuta la prueba de OpenCode antes de compilar")
+check("qemu-user:i386" in workflow,
+      "La prueba de OpenCode no usa el emulador i386 de 32 bits")
 
 # ---------------------------------------------------------------- resultado
 if errors:

@@ -1,0 +1,53 @@
+#!/bin/sh
+# MosaicOS — diagnóstico de la instalación de OpenCode para i386.
+set -eu
+
+PREFIX=${OPENCODE_PREFIX:-/opt/opencode}
+QEMU=${OPENCODE_QEMU:-/usr/bin/qemu-x86_64}
+status=0
+
+say() { printf '%s\n' "$*"; }
+ok() { printf '  [OK] %s\n' "$*"; }
+bad() { printf '  [FALLO] %s\n' "$*"; status=1; }
+
+say "OpenCode en MosaicOS i386"
+say "Arquitectura del sistema: $(dpkg --print-architecture 2>/dev/null || uname -m)"
+
+if [ -x "$QEMU" ]; then
+  ok "qemu-x86_64: $QEMU"
+  if command -v file >/dev/null 2>&1; then
+    say "    $(file -b "$QEMU" 2>/dev/null || echo 'tipo desconocido')"
+  fi
+else
+  bad "no se encuentra $QEMU (paquete qemu-user)"
+fi
+
+for path in \
+  "$PREFIX/opencode" \
+  "$PREFIX/x86_64/lib/ld-musl-x86_64.so.1" \
+  "$PREFIX/x86_64/lib/libc.musl-x86_64.so.1" \
+  "$PREFIX/x86_64/usr/lib/libstdc++.so.6" \
+  "$PREFIX/x86_64/usr/lib/libgcc_s.so.1"; do
+  if [ -e "$path" ]; then
+    ok "$path"
+  else
+    bad "falta $path"
+  fi
+done
+
+if [ -f "$PREFIX/MANIFEST" ]; then
+  say "Manifiesto:"
+  sed 's/^/  /' "$PREFIX/MANIFEST"
+fi
+
+if [ "$status" = 0 ]; then
+  say "Comprobando que el binario arranca (puede tardar varios minutos)..."
+  if timeout 900 /usr/local/bin/opencode --version; then
+    ok "opencode --version"
+  else
+    bad "opencode --version devolvió un error"
+    say "Prueba el modo de emergencia: MOSAIC_OPENCODE_SAFE=1 opencode --version"
+  fi
+fi
+
+exit "$status"

@@ -1,0 +1,48 @@
+#!/bin/sh
+# MosaicOS — lanzador de OpenCode sobre un sistema i386.
+#
+# OpenCode solo publica binarios x86_64. Este lanzador ejecuta el binario
+# oficial x64/musl con qemu-x86_64 (paquete qemu-user de 32 bits) y su propio
+# cargador musl x86_64. Todo el proceso qemu es de 32 bits, por lo que funciona
+# en MosaicOS i386 sin necesitar un kernel de 64 bits.
+set -eu
+
+PREFIX=${OPENCODE_PREFIX:-/opt/opencode}
+QEMU=${OPENCODE_QEMU:-/usr/bin/qemu-x86_64}
+BIN="$PREFIX/opencode"
+LOADER="$PREFIX/x86_64/lib/ld-musl-x86_64.so.1"
+LIBDIR="$PREFIX/x86_64/lib:$PREFIX/x86_64/usr/lib"
+
+if [ ! -x "$QEMU" ]; then
+  echo "opencode: falta qemu-x86_64. Instala el paquete qemu-user." >&2
+  exit 127
+fi
+if [ ! -x "$LOADER" ] || [ ! -f "$BIN" ]; then
+  echo "opencode: instalación incompleta en $PREFIX." >&2
+  echo "Vuelve a ejecutar /usr/local/lib/mosaicos/opencode-install.sh como root." >&2
+  exit 127
+fi
+
+# En un host de 32 bits el espacio de direcciones del invitado está limitado a
+# 4 GiB. Estas variables evitan las reservas gigantes de JavaScriptCore y
+# reducen la memoria de JIT, que son la causa habitual de fallos bajo qemu.
+GIGACAGE_ENABLED=${GIGACAGE_ENABLED:-0}
+BUN_JSC_jitMemoryReservationSize=${BUN_JSC_jitMemoryReservationSize:-67108864}
+export GIGACAGE_ENABLED BUN_JSC_jitMemoryReservationSize
+
+if [ "${MOSAIC_OPENCODE_SAFE:-0}" = 1 ]; then
+  # Modo de emergencia: sin JIT. Es mucho más lento, pero reduce al mínimo las
+  # asignaciones ejecutables y suele permitir arrancar en equipos con poca RAM.
+  BUN_JSC_useJIT=0
+  BUN_JSC_useDFGJIT=0
+  BUN_JSC_useFTLJIT=0
+  export BUN_JSC_useJIT BUN_JSC_useDFGJIT BUN_JSC_useFTLJIT
+fi
+
+# -cpu max expone todas las extensiones que qemu puede emular; el binario
+# "baseline" no las exige, pero así también funcionan las dependencias que las
+# detecten. Los flags adicionales se pueden añadir con MOSAIC_OPENCODE_QEMU_FLAGS.
+# shellcheck disable=SC2086
+exec "$QEMU" -cpu max ${MOSAIC_OPENCODE_QEMU_FLAGS:-} \
+  -E "LD_LIBRARY_PATH=$LIBDIR" \
+  "$LOADER" "$BIN" "$@"

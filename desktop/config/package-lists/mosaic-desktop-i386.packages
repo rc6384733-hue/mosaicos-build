@@ -208,6 +208,11 @@ screengrab
 scrot
 guvcview
 
+# --- OpenCode sobre i386 ---
+# OpenCode solo publica binarios x86_64. qemu-user (i386) aporta qemu-x86_64,
+# un emulador de 32 bits que ejecuta el binario oficial x64/musl.
+qemu-user
+
 # --- Compatibilidad con aplicaciones Windows (32 bits) ---
 wine
 wine32

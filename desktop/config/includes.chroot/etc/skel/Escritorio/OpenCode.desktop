@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=OpenCode
+Comment=Agente de programación con IA (experimental en i386)
+Exec=/usr/local/bin/mosaic-opencode
+Icon=utilities-terminal
+Terminal=false
+Categories=Development;Utility;

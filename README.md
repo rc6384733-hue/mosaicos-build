@@ -10,6 +10,7 @@ La imagen se distribuye como **receta de compilación**. Este ZIP contiene el c�
 - **Escritorio:** LXQt + Openbox con tema Aero inspirado en Windows 7, panel inferior, orbe de inicio, fondos y sonido de arranque propios.
 - **Aplicaciones Linux nativas:** Firefox ESR, Thunderbird, LibreOffice, VLC, MPV, GIMP, Inkscape, Audacious, qBittorrent/Transmission, FileZilla, Remmina, GParted, Synaptic y más.
 - **Aplicaciones Windows:** Wine32 + `winetricks` + integración de archivos `.exe`. Funcionan programas **Windows de 32 bits**; los de 64 bits no pueden ejecutarse en un sistema i386.
+- **OpenCode:** el binario oficial x86_64/musl ejecutado con `qemu-user` i386 (proceso de 32 bits), con lanzador de consola, acceso en el menú y diagnóstico. Es experimental; consulta [docs/OPENCODE-I386.md](docs/OPENCODE-I386.md).
 - **Instalación:** lanzador del instalador Debian incluido en la ISO y acceso directo «Instalar MosaicOS».
 - **Mantenimiento:** Centro Mosaic, Configuración Mosaic, diagnóstico, informes, copias de seguridad, actualizaciones y Mosaic Store.
 - **Idioma:** español (locale `es_ES.UTF-8`, teclado `es`, zona horaria `Europe/Madrid`).

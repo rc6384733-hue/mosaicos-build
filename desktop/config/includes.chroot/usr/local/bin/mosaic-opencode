@@ -1,0 +1,21 @@
+#!/bin/sh
+# MosaicOS — abre OpenCode en una terminal (o directamente con --cli).
+set -eu
+
+if [ "${1:-}" = "--cli" ]; then
+  shift
+  exec /usr/local/bin/opencode "$@"
+fi
+
+if [ -t 0 ] && [ -t 1 ]; then
+  exec /usr/local/bin/opencode "$@"
+fi
+
+for term in qterminal x-terminal-emulator xterm; do
+  if command -v "$term" >/dev/null 2>&1; then
+    exec "$term" -e /usr/local/bin/opencode "$@"
+  fi
+done
+
+echo "mosaic-opencode: no se encontró una terminal (qterminal/xterm)." >&2
+exit 127
