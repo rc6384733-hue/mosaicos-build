@@ -21,27 +21,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Instalar qemu-user de 32 bits
+      - name: Instalar qemu-user de 32 bits y probar OpenCode
         run: |
           set -eu
-          sudo dpkg --add-architecture i386
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq --no-install-recommends \
-            qemu-user:i386 file curl ca-certificates
-          # qemu-x86_64 debe ser un ELF i386 para que la prueba reproduzca
-          # el límite de espacio de direcciones de MosaicOS de 32 bits.
-          file "$(command -v qemu-x86_64)"
-          file "$(command -v qemu-x86_64)" | grep -q 'ELF 32-bit'
-
-      - name: Probar OpenCode sobre qemu-x86_64 i386
-        run: sudo sh tests/opencode-i386/run.sh
+          docker run --rm \
+            -v "$PWD:/work" -w /work \
+            -e OPENCODE_TEST_LOG=/work/opencode-i386.log \
+            debian:bookworm \
+            sh -c '
+              set -eu
+              dpkg --add-architecture i386
+              apt-get update -qq
+              apt-get install -y -qq --no-install-recommends \
+                qemu-user:i386 file curl ca-certificates
+              # qemu-x86_64 debe ser un ELF i386 para que la prueba reproduzca
+              # el límite de espacio de direcciones de MosaicOS de 32 bits.
+              file "$(command -v qemu-x86_64)"
+              file "$(command -v qemu-x86_64)" | grep -q "ELF 32-bit"
+              sh tests/opencode-i386/run.sh
+            '
 
       - name: Publicar registro de la prueba
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: opencode-i386-log
-          path: /tmp/opencode-i386.log
+          path: opencode-i386.log
           if-no-files-found: ignore
           retention-days: 7
 
